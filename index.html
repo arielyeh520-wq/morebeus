@@ -63,8 +63,8 @@
         <div class="truncate">
           <div class="flex items-center gap-2">
             <h1 id="siteTitleDisplay" class="font-display font-bold text-lg sm:text-xl tracking-tight text-warm-text truncate">MOREBEUS</h1>
-            <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-crimson-50 text-crimson-700 border border-crimson-200/80">
-              雲端同步版
+            <span id="cloudStatusBadge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200/80">
+              連線中...
             </span>
           </div>
           <p id="siteSubtitleDisplay" class="text-xs text-warm-muted truncate">2026 Live Schedule &amp; Event Info</p>
@@ -95,7 +95,6 @@
           <span>新增演出</span>
         </button>
 
-        <!-- More Menu -->
         <div class="relative">
           <button
             id="moreMenuBtn"
@@ -121,6 +120,19 @@
       </div>
     </div>
   </header>
+
+  <!-- Diagnostic Error Alert Banner (Only shows when API fails) -->
+  <div id="errorAlertBanner" class="hidden bg-red-600 text-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm">
+      <div>
+        <strong>⚠️ 雲端連線發生問題：</strong>
+        <span id="errorAlertDetail">無法連接 JSONBin</span>
+      </div>
+      <button id="retryFetchBtn" type="button" class="px-3 py-1 rounded bg-white text-red-700 font-semibold text-xs shrink-0 self-start sm:self-auto cursor-pointer">
+        重新連線
+      </button>
+    </div>
+  </div>
 
   <!-- Edit Mode Notice Banner -->
   <div id="editBanner" class="hidden bg-crimson-50 border-b border-crimson-200/80">
@@ -149,7 +161,7 @@
           <span id="lastUpdatedLabel" class="text-xs text-warm-muted">最後更新：--</span>
         </div>
         <p id="announcementText" class="text-sm text-warm-text leading-relaxed">
-          載入中...
+          正在從雲端讀取最新公告...
         </p>
       </div>
       <div class="flex items-center gap-3 shrink-0 text-xs text-warm-muted border-t sm:border-t-0 pt-2.5 sm:pt-0 border-warm-border pl-2 sm:pl-0">
@@ -172,7 +184,7 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
           </button>
         </div>
-        <div class="inline-flex rounded-xl bg-white border border-warm-border p-1 shrink-0">
+        <div class="inline-flex rounded-xl bg-white border border-warm-border p-1 shrink-0 self-start sm:self-auto">
           <button type="button" data-time-filter="all" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-crimson-700 text-white transition-colors cursor-pointer">全部場次</button>
           <button type="button" data-time-filter="upcoming" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer">即將演出</button>
           <button type="button" data-time-filter="past" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer">已結束</button>
@@ -183,24 +195,27 @@
 
     <!-- Event List -->
     <section id="eventListContainer" class="space-y-3.5">
-      <div class="text-center py-12 text-warm-muted text-sm">正在從雲端同步載入演出資訊...</div>
+      <div class="bg-white border border-warm-border rounded-2xl p-10 text-center text-warm-muted text-sm">
+        正在從雲端同步載入演出資訊...
+      </div>
     </section>
 
     <!-- Empty State -->
     <div id="emptyState" class="hidden bg-white border border-warm-border rounded-2xl p-10 text-center space-y-3">
       <h3 class="text-base font-semibold text-warm-text">找不到符合條件的演出場次</h3>
+      <p class="text-xs text-warm-muted">請嘗試清除搜尋關鍵字，或點擊右上角「新增演出」建立場次。</p>
     </div>
   </main>
 
   <!-- Footer -->
   <footer class="border-t border-warm-border bg-white mt-12">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex items-center justify-between text-xs text-warm-muted">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-warm-muted">
       <span class="font-display font-bold text-crimson-800">MOREBEUS</span>
-      <span>雲端即時同步演出資訊總覽</span>
+      <span>雲端即時同步演出資訊與歌單總覽</span>
     </div>
   </footer>
 
-  <!-- Add / Edit Modal -->
+  <!-- Add / Edit Event Modal -->
   <div id="eventModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full shadow-xl overflow-hidden my-auto animate-card">
       <div class="px-5 py-4 border-b border-warm-border bg-warm-tint/70 flex items-center justify-between">
@@ -213,48 +228,65 @@
         <input type="hidden" id="fieldId" />
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           <div class="sm:col-span-2">
-            <label class="block text-xs font-medium text-warm-text mb-1">活動名稱 <span class="text-crimson-600">*</span></label>
-            <input id="fieldTitle" type="text" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
+            <label class="block text-xs font-medium text-warm-text mb-1">活動 / 演出名稱 <span class="text-crimson-600">*</span></label>
+            <input id="fieldTitle" type="text" required placeholder="例如：MOREBEUS 2026 冬季專場" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
           </div>
           <div>
             <label class="block text-xs font-medium text-warm-text mb-1">演出狀態</label>
             <select id="fieldStatus" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm bg-white focus:outline-none focus:border-crimson-600">
-              <option value="售票中">售票中</option><option value="即將開賣">即將開賣</option><option value="免費入場">免費入場</option><option value="已完售">已完售</option><option value="已結束">已結束</option>
+              <option value="售票中">售票中</option>
+              <option value="即將開賣">即將開賣</option>
+              <option value="免費入場">免費入場</option>
+              <option value="已完售">已完售</option>
+              <option value="已結束">已結束</option>
             </select>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-          <div><label class="block text-xs font-medium text-warm-text mb-1">日期 <span class="text-crimson-600">*</span></label><input id="fieldDate" type="date" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
-          <div><label class="block text-xs font-medium text-warm-text mb-1">進場 (OPEN)</label><input id="fieldOpenTime" type="text" placeholder="19:00" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
-          <div><label class="block text-xs font-medium text-warm-text mb-1">開演 (START)</label><input id="fieldStartTime" type="text" placeholder="19:30" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">演出日期 <span class="text-crimson-600">*</span></label><input id="fieldDate" type="date" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">進場時間 (OPEN)</label><input id="fieldOpenTime" type="text" placeholder="19:00" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">開演時間 (START)</label><input id="fieldStartTime" type="text" placeholder="19:30" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           <div><label class="block text-xs font-medium text-warm-text mb-1">城市 <span class="text-crimson-600">*</span></label><input id="fieldCity" type="text" required placeholder="台北" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
-          <div class="sm:col-span-2"><label class="block text-xs font-medium text-warm-text mb-1">場館 <span class="text-crimson-600">*</span></label><input id="fieldVenue" type="text" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-warm-text mb-1">演出場館 <span class="text-crimson-600">*</span></label><input id="fieldVenue" type="text" required placeholder="Legacy Taipei" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         </div>
-        <div><label class="block text-xs font-medium text-warm-text mb-1">地址</label><input id="fieldAddress" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
-        <div><label class="block text-xs font-medium text-warm-text mb-1">演出陣容 (逗號分隔)</label><input id="fieldLineup" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+        <div><label class="block text-xs font-medium text-warm-text mb-1">場館地址（選填）</label><input id="fieldAddress" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+        <div><label class="block text-xs font-medium text-warm-text mb-1">演出陣容（請用逗號或頓號分隔）</label><input id="fieldLineup" type="text" placeholder="MOREBEUS、共演嘉賓" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div><label class="block text-xs font-medium text-warm-text mb-1">票價</label><input id="fieldPrice" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
-          <div><label class="block text-xs font-medium text-warm-text mb-1">購票連結</label><input id="fieldTicketUrl" type="url" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">票價資訊</label><input id="fieldPrice" type="text" placeholder="預售 $800 / 現場 $1,000" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">購票 / 活動連結（選填）</label><input id="fieldTicketUrl" type="url" placeholder="https://..." class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         </div>
 
-        <!-- Setlist -->
+        <!-- Setlist Editor -->
         <div class="rounded-xl border border-crimson-200/80 bg-crimson-50/40 p-3.5 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-warm-text">演出歌單 (Setlist)</h3>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-xs font-bold text-warm-text">本場演出歌單 (Setlist)</h3>
+              <p class="text-[11px] text-warm-muted">可新增曲目、標註備註或設為演出前保密</p>
+            </div>
             <label class="inline-flex items-center gap-1.5 text-xs cursor-pointer bg-white px-2.5 py-1 rounded-lg border border-warm-border">
-              <input id="fieldSetlistHidden" type="checkbox" class="accent-crimson-700" /><span>演出前保密</span>
+              <input id="fieldSetlistHidden" type="checkbox" class="accent-crimson-700" /><span>演出前保密（僅編輯模式可見）</span>
             </label>
           </div>
           <div id="setlistEditorRows" class="space-y-2"></div>
-          <button type="button" id="addSongRowBtn" class="px-3 py-1 rounded-lg bg-white border border-crimson-200 text-xs text-crimson-700 cursor-pointer">+ 新增歌曲</button>
+          <div class="flex items-center justify-between pt-1">
+            <button type="button" id="addSongRowBtn" class="px-3 py-1.5 rounded-lg bg-white border border-crimson-200 text-xs font-medium text-crimson-700 hover:bg-crimson-50 cursor-pointer">+ 新增一首歌曲</button>
+            <button type="button" id="toggleBulkPasteBtn" class="text-xs text-warm-muted hover:text-crimson-700 underline cursor-pointer">快速貼上多行歌單</button>
+          </div>
+          <div id="bulkPasteBox" class="hidden space-y-2 pt-2 border-t border-crimson-200/60">
+            <textarea id="bulkPasteTextarea" rows="3" placeholder="每行輸入一首曲目，例如：&#10;莫比烏斯環&#10;夜行列車 (Acoustic)&#10;無名超人 [ENCORE]" class="w-full px-3 py-2 rounded-lg border border-warm-border bg-white text-xs"></textarea>
+            <div class="flex justify-end gap-2">
+              <button type="button" id="cancelBulkPasteBtn" class="px-2.5 py-1 text-xs text-warm-muted cursor-pointer">取消</button>
+              <button type="button" id="applyBulkPasteBtn" class="px-3 py-1 rounded-md bg-crimson-700 text-white text-xs cursor-pointer">匯入曲目</button>
+            </div>
+          </div>
         </div>
 
-        <div><label class="block text-xs font-medium text-warm-text mb-1">備註</label><textarea id="fieldNotes" rows="2" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600"></textarea></div>
+        <div><label class="block text-xs font-medium text-warm-text mb-1">備註說明</label><textarea id="fieldNotes" rows="2" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600"></textarea></div>
         <div class="pt-2 border-t border-warm-border flex justify-end gap-2">
           <button type="button" id="cancelEventModalBtn" class="px-4 py-2 rounded-lg border border-warm-border text-sm text-warm-muted cursor-pointer">取消</button>
-          <button type="submit" class="px-5 py-2 rounded-lg bg-crimson-700 text-white text-sm font-medium hover:bg-crimson-800 cursor-pointer">儲存至雲端</button>
+          <button type="submit" id="submitEventBtn" class="px-5 py-2 rounded-lg bg-crimson-700 text-white text-sm font-medium hover:bg-crimson-800 cursor-pointer">儲存至雲端</button>
         </div>
       </form>
     </div>
@@ -266,8 +298,12 @@
       <h2 class="text-base font-bold text-warm-text">修改標題與公告</h2>
       <form id="headerForm" class="space-y-3">
         <div><label class="block text-xs font-medium mb-1">主標題</label><input id="headerTitleInput" type="text" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm" /></div>
+        <div><label class="block text-xs font-medium mb-1">副標題</label><input id="headerSubtitleInput" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm" /></div>
         <div><label class="block text-xs font-medium mb-1">公告內容</label><textarea id="headerAnnouncementInput" rows="3" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm"></textarea></div>
-        <div class="flex justify-end gap-2 pt-2"><button type="button" id="cancelHeaderModalBtn" class="px-4 py-2 text-xs border rounded-lg">取消</button><button type="submit" class="px-4 py-2 text-xs bg-crimson-700 text-white rounded-lg">儲存</button></div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="cancelHeaderModalBtn" class="px-4 py-2 text-xs border rounded-lg cursor-pointer">取消</button>
+          <button type="submit" class="px-4 py-2 text-xs bg-crimson-700 text-white rounded-lg cursor-pointer">儲存至雲端</button>
+        </div>
       </form>
     </div>
   </div>
@@ -281,16 +317,30 @@
   </div>
 
   <script>
-    // ==========================================
-    // 請在此處填入您的 JSONBin 設定
-    // ==========================================
+    // ========================================================
+    // 【重要設定區】請在下方雙引號內填入您的 JSONBin 資料
+    // 1. Bin ID：建立 Bin 後畫面上方或網址列的那串 24 碼英數字
+    // 2. Master Key：API Keys 頁面最上方 $2a$10$... 開頭的密鑰
+    // ========================================================
     const JSONBIN_BIN_ID = "6afb1b9cac6210605a8c35c6";
     const JSONBIN_API_KEY = "$2a$10$XgIv7VzSD9M.Y/QXcKjIDOL0wSzyp48VzBdM.D4.fuClOadKw2ssi";
-    // ==========================================
+    // ========================================================
 
     (function () {
+      const BIN_ID = (JSONBIN_BIN_ID || "").trim();
+      const API_KEY = (JSONBIN_API_KEY || "").trim();
       const WEEKDAYS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
-      let appData = { siteMeta: { title: "MOREBEUS", subtitle: "2026 Live Schedule", announcement: "載入中..." }, events: [] };
+
+      let appData = {
+        siteMeta: {
+          title: "MOREBEUS",
+          subtitle: "2026 Live Schedule & Event Info",
+          announcement: "歡迎查看 MOREBEUS 最新演出資訊與歌單。",
+          lastUpdated: "--"
+        },
+        events: []
+      };
+
       let isEditMode = false;
       let selectedCity = '全部';
       let selectedTimeFilter = 'all';
@@ -312,49 +362,116 @@
       const editBanner = document.getElementById('editBanner');
       const toggleEditModeBtn = document.getElementById('toggleEditModeBtn');
       const editModeLabel = document.getElementById('editModeLabel');
+      const cloudStatusBadge = document.getElementById('cloudStatusBadge');
+      const errorAlertBanner = document.getElementById('errorAlertBanner');
+      const errorAlertDetail = document.getElementById('errorAlertDetail');
+
+      function setCloudStatus(type, text) {
+        cloudStatusBadge.textContent = text;
+        if (type === 'ok') {
+          cloudStatusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+          errorAlertBanner.classList.add('hidden');
+        } else if (type === 'error') {
+          cloudStatusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-50 text-red-700 border border-red-200';
+        } else {
+          cloudStatusBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200';
+        }
+      }
+
+      function showDiagnosticError(message) {
+        setCloudStatus('error', '連線失敗');
+        errorAlertDetail.textContent = message;
+        errorAlertBanner.classList.remove('hidden');
+      }
 
       async function fetchFromCloud() {
-        if (!JSONBIN_BIN_ID || JSONBIN_BIN_ID.includes("請貼上")) {
-          alert("尚未設定 JSONBin Bin ID，請修改程式碼底部的設定！");
+        if (!BIN_ID || BIN_ID.includes("請貼上") || !API_KEY || API_KEY.includes("請貼上")) {
+          showDiagnosticError("尚未填入 JSONBIN_BIN_ID 或 JSONBIN_API_KEY，請開啟 index.html 檢查最下方的設定區。");
+          eventListContainer.innerHTML = `<div class="bg-white border border-red-200 rounded-2xl p-8 text-center text-sm text-red-700">尚未設定 JSONBin 密鑰，請依上方紅色提示填入 Bin ID 與 Master Key。</div>`;
           return;
         }
+
+        setCloudStatus('loading', '同步中...');
         try {
-          const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-            headers: { "X-Master-Key": JSONBIN_API_KEY }
+          const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+            method: "GET",
+            headers: {
+              "X-Master-Key": API_KEY,
+              "X-Bin-Meta": "false"
+            }
           });
-          const json = await res.json();
-          if (json && json.record) {
-            appData = json.record;
+
+          const rawText = await res.text();
+          let json = null;
+          try { json = JSON.parse(rawText); } catch (e) {}
+
+          if (!res.ok) {
+            const reason = (json && json.message) ? json.message : `HTTP 狀態碼 ${res.status}`;
+            throw new Error(`讀取失敗 (${reason}) — 請確認 Bin ID 與 Master Key 是否完全正確。`);
+          }
+
+          const record = (json && json.record) ? json.record : json;
+          if (record && typeof record === 'object') {
+            appData = {
+              siteMeta: {
+                title: (record.siteMeta && record.siteMeta.title) || "MOREBEUS",
+                subtitle: (record.siteMeta && record.siteMeta.subtitle) || "2026 Live Schedule & Event Info",
+                announcement: (record.siteMeta && record.siteMeta.announcement) || "歡迎查看 MOREBEUS 最新演出資訊。",
+                lastUpdated: (record.siteMeta && record.siteMeta.lastUpdated) || "--"
+              },
+              events: Array.isArray(record.events) ? record.events : []
+            };
+            setCloudStatus('ok', '雲端已同步');
             renderAll();
+          } else {
+            throw new Error("雲端資料格式不正確，請確認 JSONBin 內貼上的是正確的 JSON 物件。");
           }
         } catch (err) {
-          console.error("雲端載入失敗", err);
-          showToast("雲端載入失敗，請檢查網路或設定");
+          console.error("雲端載入失敗:", err);
+          showDiagnosticError(err.message || "網路連線失敗，若您是直接雙擊開啟本機 HTML 檔，請先上傳至 GitHub Pages 再測試。");
+          eventListContainer.innerHTML = `<div class="bg-white border border-warm-border rounded-2xl p-8 text-center text-sm text-warm-muted">無法載入雲端資料，請查看上方紅色錯誤提示。</div>`;
         }
       }
 
       async function saveToCloud() {
+        if (!BIN_ID || BIN_ID.includes("請貼上") || !API_KEY || API_KEY.includes("請貼上")) {
+          alert("尚未設定 JSONBin 的 Bin ID 或 Master Key！");
+          return false;
+        }
+
         const now = new Date();
-        appData.siteMeta.lastUpdated = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+        appData.siteMeta.lastUpdated = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+        setCloudStatus('loading', '儲存中...');
+        showToast("正在寫入雲端資料庫...");
+
         try {
-          showToast("正在同步至雲端...");
-          const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+          const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              "X-Master-Key": JSONBIN_API_KEY
+              "X-Master-Key": API_KEY
             },
             body: JSON.stringify(appData)
           });
-          if (res.ok) {
-            showToast("已成功同步至雲端！其他人重新整理即可看到");
-            renderAll();
-          } else {
-            throw new Error("儲存失敗");
+
+          const rawText = await res.text();
+          let json = null;
+          try { json = JSON.parse(rawText); } catch (e) {}
+
+          if (!res.ok) {
+            const reason = (json && json.message) ? json.message : `HTTP 狀態碼 ${res.status}`;
+            throw new Error(`寫入雲端失敗 (${reason}) — 請確認您貼上的是「Master Key」而非唯讀金鑰。`);
           }
+
+          setCloudStatus('ok', '雲端已同步');
+          showToast("✅ 已成功更新至雲端！所有人重新整理即可看到");
+          renderAll();
+          return true;
         } catch (err) {
-          console.error(err);
-          alert("同步雲端失敗，請檢查 API Key 是否正確。");
+          console.error("寫入雲端失敗:", err);
+          showDiagnosticError(err.message || "寫入雲端失敗，請檢查網路連線。");
+          alert("儲存失敗：\n" + (err.message || "未知錯誤"));
+          return false;
         }
       }
 
@@ -367,12 +484,12 @@
         window.__toastTimer = setTimeout(() => {
           toast.classList.add('opacity-0', 'translate-y-2');
           toast.classList.remove('opacity-100', 'translate-y-0');
-        }, 2600);
+        }, 3000);
       }
 
       function getTodayStr() {
         const d = new Date();
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       }
 
       function isEventPast(ev) {
@@ -385,7 +502,22 @@
         if (!dateStr) return { year: '----', monthDay: '--/--', weekday: '' };
         const [y, m, d] = dateStr.split('-').map(Number);
         const dt = new Date(y, (m || 1) - 1, d || 1);
-        return { year: String(y), monthDay: `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`, weekday: WEEKDAYS[dt.getDay()] || '' };
+        return {
+          year: String(y),
+          monthDay: `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`,
+          weekday: WEEKDAYS[dt.getDay()] || ''
+        };
+      }
+
+      function getStatusBadgeClass(status, past) {
+        if (past || status === '已結束') return 'bg-stone-100 text-stone-500 border-stone-200';
+        switch (status) {
+          case '售票中': return 'bg-crimson-50 text-crimson-700 border-crimson-200';
+          case '即將開賣': return 'bg-amber-50 text-amber-800 border-amber-200';
+          case '免費入場': return 'bg-orange-50 text-orange-700 border-orange-200';
+          case '已完售': return 'bg-rose-100 text-rose-800 border-rose-300';
+          default: return 'bg-stone-100 text-stone-700 border-stone-200';
+        }
       }
 
       function escapeHtml(str) {
@@ -399,14 +531,12 @@
         announcementText.textContent = appData.siteMeta.announcement || '';
         lastUpdatedLabel.textContent = `最後更新：${appData.siteMeta.lastUpdated || '-'}`;
 
-        const total = (appData.events || []).length;
-        const upcoming = (appData.events || []).filter(ev => !isEventPast(ev)).length;
-        totalCountStat.textContent = total;
-        upcomingCountStat.textContent = upcoming;
+        const events = appData.events || [];
+        totalCountStat.textContent = events.length;
+        upcomingCountStat.textContent = events.filter(ev => !isEventPast(ev)).length;
 
-        // Cities
         const cities = ['全部'];
-        (appData.events || []).forEach(ev => {
+        events.forEach(ev => {
           const c = (ev.city || '').trim();
           if (c && !cities.includes(c)) cities.push(c);
         });
@@ -414,12 +544,14 @@
 
         cityFilterBar.innerHTML = cities.map(city => {
           const active = city === selectedCity;
-          const count = city === '全部' ? total : (appData.events || []).filter(e => (e.city || '').trim() === city).length;
-          return `<button type="button" data-city="${escapeHtml(city)}" class="city-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border cursor-pointer ${active ? 'bg-crimson-700 text-white border-crimson-700' : 'bg-white text-warm-muted border-warm-border'}">${escapeHtml(city)} <span class="text-[11px]">${count}</span></button>`;
+          const count = city === '全部' ? events.length : events.filter(e => (e.city || '').trim() === city).length;
+          return `<button type="button" data-city="${escapeHtml(city)}" class="city-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap cursor-pointer ${
+            active ? 'bg-crimson-700 text-white border-crimson-700' : 'bg-white text-warm-muted border-warm-border hover:border-crimson-300'
+          }">${escapeHtml(city)} <span class="text-[11px] ${active ? 'text-crimson-100' : 'text-warm-subtle'}">${count}</span></button>`;
         }).join('');
 
         cityFilterBar.querySelectorAll('.city-pill').forEach(btn => {
-          btn.addEventListener('click', () => { selectedCity = btn.dataset.city; renderEvents(); });
+          btn.addEventListener('click', () => { selectedCity = btn.dataset.city; renderAll(); });
         });
 
         renderEvents();
@@ -435,7 +567,10 @@
           if (selectedTimeFilter === 'past' && !past) return false;
           if (selectedCity !== '全部' && (ev.city || '').trim() !== selectedCity) return false;
           if (q) {
-            const haystack = [ev.title, ev.city, ev.venue, ev.address, ev.price, ev.notes, ...(ev.lineup || [])].join(' ').toLowerCase();
+            const songsText = (!ev.setlistHidden || isEditMode)
+              ? (ev.setlist || []).map(s => `${s.title} ${s.note}`).join(' ')
+              : '';
+            const haystack = [ev.title, ev.city, ev.venue, ev.address, ev.price, ev.notes, ...(ev.lineup || []), songsText].join(' ').toLowerCase();
             if (!haystack.includes(q)) return false;
           }
           return true;
@@ -450,46 +585,98 @@
         emptyState.classList.add('hidden');
 
         eventListContainer.innerHTML = filtered.map(ev => {
-          const realIndex = events.findIndex(item => item.id === ev.id);
           const past = isEventPast(ev);
           const { year, monthDay, weekday } = formatDateParts(ev.date);
           const displayStatus = past && ev.status !== '已結束' ? '已結束' : (ev.status || '售票中');
+          const badgeClass = getStatusBadgeClass(displayStatus, past);
+          const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.address || `${ev.city || ''} ${ev.venue || ''}`)}`;
           const songs = ev.setlist || [];
-          const canViewSetlist = songs.length > 0 && (!ev.setlistHidden || isEditMode);
+          const hasSongs = songs.length > 0;
+          const canViewSetlist = hasSongs && (!ev.setlistHidden || isEditMode);
           const isSetlistExpanded = expandedSetlistIds.has(ev.id);
 
+          const lineupHtml = (ev.lineup && ev.lineup.length)
+            ? ev.lineup.map(artist => {
+                const isMain = artist.toUpperCase().includes('MOREBEUS');
+                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs ${
+                  isMain ? 'bg-crimson-700 text-white font-medium' : 'bg-warm-tint text-warm-text border border-warm-border/80'
+                }">${escapeHtml(artist)}</span>`;
+              }).join('')
+            : '';
+
+          const timeString = [
+            ev.openTime ? `OPEN ${escapeHtml(ev.openTime)}` : '',
+            ev.startTime ? `START ${escapeHtml(ev.startTime)}` : ''
+          ].filter(Boolean).join(' / ');
+
           return `
-            <article class="animate-card bg-white border border-warm-border rounded-2xl p-4 sm:p-5 shadow-2xs">
+            <article class="animate-card bg-white border ${past ? 'border-warm-border/75 opacity-85' : 'border-warm-border hover:border-crimson-300'} rounded-2xl p-4 sm:p-5 shadow-2xs">
               <div class="flex flex-col md:flex-row md:items-start gap-4">
                 <div class="flex md:flex-col items-baseline md:items-center justify-between md:w-28 shrink-0 pb-3 md:pb-0 border-b md:border-b-0 md:border-r border-warm-border md:pr-4">
-                  <span class="text-xs text-warm-subtle">${year}</span>
-                  <span class="font-display text-xl sm:text-2xl font-bold ${past ? 'text-warm-muted' : 'text-crimson-700'}">${monthDay}</span>
-                  <span class="text-xs text-warm-muted">${weekday}</span>
-                  <span class="px-2 py-0.5 rounded-full text-[11px] border bg-stone-50">${displayStatus}</span>
+                  <div class="flex items-baseline md:flex-col md:items-center gap-2 md:gap-0.5">
+                    <span class="text-xs text-warm-subtle">${year}</span>
+                    <span class="font-display text-xl sm:text-2xl font-bold ${past ? 'text-warm-muted' : 'text-crimson-700'}">${monthDay}</span>
+                    <span class="text-xs text-warm-muted">${weekday}</span>
+                  </div>
+                  <span class="inline-flex items-center px-2.5 py-0.5 md:mt-2 rounded-full text-[11px] font-medium border ${badgeClass}">${escapeHtml(displayStatus)}</span>
                 </div>
-                <div class="flex-1 min-w-0 space-y-2">
-                  <h2 class="text-base sm:text-lg font-bold text-warm-text">${escapeHtml(ev.title)}</h2>
-                  <p class="text-xs sm:text-sm text-warm-muted">📍 ${escapeHtml(ev.venue)} | ⏰ ${escapeHtml(ev.openTime)} OPEN</p>
-                  ${ev.lineup ? `<p class="text-xs text-warm-subtle">陣容：${ev.lineup.join('、')}</p>` : ''}
-                  
+
+                <div class="flex-1 min-w-0 space-y-2.5">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-crimson-50 text-crimson-800 border border-crimson-200/80">${escapeHtml(ev.city || '未定')}</span>
+                    <h2 class="text-base sm:text-lg font-bold text-warm-text">${escapeHtml(ev.title)}</h2>
+                  </div>
+
+                  <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm text-warm-muted">
+                    <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 hover:text-crimson-700">
+                      <span class="font-medium text-warm-text underline decoration-crimson-200 underline-offset-4">${escapeHtml(ev.venue)}</span>
+                    </a>
+                    ${timeString ? `<span>${timeString}</span>` : ''}
+                    ${ev.price ? `<span>${escapeHtml(ev.price)}</span>` : ''}
+                  </div>
+
+                  ${lineupHtml ? `<div class="flex flex-wrap items-center gap-1.5"><span class="text-xs text-warm-subtle">演出陣容：</span>${lineupHtml}</div>` : ''}
+                  ${ev.notes ? `<p class="text-xs text-warm-muted bg-warm-tint/80 rounded-lg px-3 py-2 border border-warm-border/70">${escapeHtml(ev.notes)}</p>` : ''}
+
                   ${canViewSetlist ? `
-                    <div class="pt-2 border-t border-warm-border/70">
-                      <button type="button" data-action="toggle-setlist" data-id="${ev.id}" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-crimson-50 text-crimson-800 border border-crimson-200 cursor-pointer">
-                        🎵 演出歌單（共 ${songs.length} 首） ${isSetlistExpanded ? '▲' : '▼'}
+                    <div class="pt-2.5 border-t border-warm-border/70">
+                      <button type="button" data-action="toggle-setlist" data-id="${escapeHtml(ev.id)}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer ${
+                        isSetlistExpanded ? 'bg-crimson-700 text-white' : 'bg-crimson-50 text-crimson-800 border border-crimson-200/80 hover:bg-crimson-100/70'
+                      }">
+                        <span>🎵 演出歌單（共 ${songs.length} 首）</span>
+                        ${ev.setlistHidden && isEditMode ? '<span class="px-1.5 rounded bg-amber-200 text-amber-950 text-[10px]">保密中</span>' : ''}
+                        <span>${isSetlistExpanded ? '▲' : '▼'}</span>
                       </button>
                       ${isSetlistExpanded ? `
-                        <ol class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 bg-warm-tint p-3 rounded-xl text-xs">
-                          ${songs.map((s, i) => `<li>${i+1}. ${escapeHtml(s.title)} ${s.note ? `(${s.note})` : ''}</li>`).join('')}
-                        </ol>
+                        <div class="mt-2.5 rounded-xl bg-warm-tint/90 border border-warm-border p-3">
+                          <ol class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs">
+                            ${songs.map((s, idx) => `
+                              <li class="flex items-center justify-between gap-2 py-1 border-b border-warm-border/50">
+                                <span><strong class="font-display text-crimson-700 mr-1.5">${String(idx + 1).padStart(2, '0')}</strong>${escapeHtml(s.title)}</span>
+                                ${s.note ? `<span class="px-1.5 py-0.5 rounded bg-white border border-warm-border text-[10px] text-warm-muted">${escapeHtml(s.note)}</span>` : ''}
+                              </li>
+                            `).join('')}
+                          </ol>
+                        </div>
                       ` : ''}
                     </div>
-                  ` : ''}
+                  ` : (hasSongs && ev.setlistHidden && !isEditMode ? `
+                    <div class="pt-2 border-t border-warm-border/60 text-[11px] text-warm-subtle">🔒 本場演出歌單將於演出後公開（共 ${songs.length} 首）</div>
+                  ` : '')}
                 </div>
-                <div class="flex items-center gap-2">
-                  ${isEditMode ? `
-                    <button type="button" data-action="edit" data-id="${ev.id}" class="px-3 py-1.5 rounded-lg border bg-white text-xs cursor-pointer">編輯</button>
-                    <button type="button" data-action="delete" data-id="${ev.id}" class="px-3 py-1.5 rounded-lg border border-crimson-200 bg-crimson-50 text-crimson-700 text-xs cursor-pointer">刪除</button>
+
+                <div class="flex md:flex-col items-center md:items-end justify-between gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-warm-border shrink-0">
+                  ${ev.ticketUrl ? `
+                    <a href="${escapeHtml(ev.ticketUrl)}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl text-xs font-medium ${past ? 'bg-stone-100 text-stone-600' : 'bg-crimson-700 text-white hover:bg-crimson-800'}">
+                      ${past ? '活動回顧' : '購票 / 詳情'}
+                    </a>
                   ` : ''}
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" data-action="edit" data-id="${escapeHtml(ev.id)}" class="px-2.5 py-1.5 rounded-lg border border-warm-border bg-white text-xs font-medium text-warm-text hover:bg-crimson-50 hover:text-crimson-700 cursor-pointer">編輯</button>
+                    ${isEditMode ? `
+                      <button type="button" data-action="delete" data-id="${escapeHtml(ev.id)}" class="px-2.5 py-1.5 rounded-lg border border-crimson-200 bg-crimson-50 text-crimson-700 text-xs cursor-pointer">刪除</button>
+                    ` : ''}
+                  </div>
                 </div>
               </div>
             </article>
@@ -504,15 +691,64 @@
         editModeLabel.textContent = isEditMode ? '編輯中' : '編輯模式';
         renderEvents();
       });
-      document.getElementById('bannerCloseEditBtn').addEventListener('click', () => { isEditMode = false; editBanner.classList.add('hidden'); renderEvents(); });
+      document.getElementById('bannerCloseEditBtn').addEventListener('click', () => {
+        isEditMode = false;
+        editBanner.classList.add('hidden');
+        editModeLabel.textContent = '編輯模式';
+        renderEvents();
+      });
+
+      // Setlist Editor inside Modal
+      const setlistEditorRows = document.getElementById('setlistEditorRows');
+      function renderSetlistEditor() {
+        if (!draftSetlist.length) {
+          setlistEditorRows.innerHTML = `<div class="text-xs text-warm-subtle bg-white/80 border border-dashed border-crimson-200 rounded-lg py-2.5 text-center">尚未新增歌曲</div>`;
+          return;
+        }
+        setlistEditorRows.innerHTML = draftSetlist.map((s, idx) => `
+          <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-lg border border-warm-border">
+            <span class="font-display font-bold text-xs text-crimson-700 w-5 text-center">${idx + 1}</span>
+            <input type="text" value="${escapeHtml(s.title)}" placeholder="歌曲名稱" oninput="window.__updSong(${idx}, 'title', this.value)" class="flex-1 min-w-0 px-2 py-1 text-xs border border-warm-border rounded" />
+            <input type="text" value="${escapeHtml(s.note)}" placeholder="備註 (如 ENCORE)" oninput="window.__updSong(${idx}, 'note', this.value)" class="w-28 sm:w-36 px-2 py-1 text-xs border border-warm-border rounded" />
+            <button type="button" onclick="window.__delSong(${idx})" class="text-crimson-600 text-xs px-2 hover:bg-crimson-50 rounded cursor-pointer">✕</button>
+          </div>
+        `).join('');
+      }
+      window.__updSong = (i, f, v) => { if (draftSetlist[i]) draftSetlist[i][f] = v; };
+      window.__delSong = (i) => { draftSetlist.splice(i, 1); renderSetlistEditor(); };
+
+      document.getElementById('addSongRowBtn').addEventListener('click', () => {
+        draftSetlist.push({ title: '', note: '' });
+        renderSetlistEditor();
+      });
+
+      const bulkPasteBox = document.getElementById('bulkPasteBox');
+      const bulkPasteTextarea = document.getElementById('bulkPasteTextarea');
+      document.getElementById('toggleBulkPasteBtn').addEventListener('click', () => bulkPasteBox.classList.toggle('hidden'));
+      document.getElementById('cancelBulkPasteBtn').addEventListener('click', () => { bulkPasteBox.classList.add('hidden'); bulkPasteTextarea.value = ''; });
+      document.getElementById('applyBulkPasteBtn').addEventListener('click', () => {
+        const lines = bulkPasteTextarea.value.split('\n').map(l => l.trim()).filter(Boolean);
+        lines.forEach(line => {
+          let cleaned = line.replace(/^\d+[\.\-\)、\s]+\s*/, '');
+          let note = '';
+          const match = cleaned.match(/[\[\(（]([^\]\)）]+)[\]\)）]\s*$/);
+          if (match) { note = match[1].trim(); cleaned = cleaned.replace(match[0], '').trim(); }
+          if (cleaned) draftSetlist.push({ title: cleaned, note });
+        });
+        bulkPasteTextarea.value = '';
+        bulkPasteBox.classList.add('hidden');
+        renderSetlistEditor();
+      });
 
       // Modal Handling
       const eventModal = document.getElementById('eventModal');
       const eventForm = document.getElementById('eventForm');
-      let draftSetlist = [];
+      const submitEventBtn = document.getElementById('submitEventBtn');
 
       function openModal(ev = null) {
+        bulkPasteBox.classList.add('hidden');
         if (ev) {
+          document.getElementById('eventModalTitle').textContent = '編輯演出資訊與歌單';
           document.getElementById('fieldId').value = ev.id;
           document.getElementById('fieldTitle').value = ev.title || '';
           document.getElementById('fieldStatus').value = ev.status || '售票中';
@@ -527,37 +763,28 @@
           document.getElementById('fieldTicketUrl').value = ev.ticketUrl || '';
           document.getElementById('fieldNotes').value = ev.notes || '';
           document.getElementById('fieldSetlistHidden').checked = Boolean(ev.setlistHidden);
-          draftSetlist = (ev.setlist || []).map(s => ({ ...s }));
+          draftSetlist = (ev.setlist || []).map(s => ({ title: s.title || '', note: s.note || '' }));
         } else {
+          document.getElementById('eventModalTitle').textContent = '新增演出資訊';
           eventForm.reset();
           document.getElementById('fieldId').value = '';
           document.getElementById('fieldDate').value = getTodayStr();
+          document.getElementById('fieldLineup').value = 'MOREBEUS';
           draftSetlist = [];
         }
         renderSetlistEditor();
         eventModal.classList.remove('hidden');
       }
 
-      function renderSetlistEditor() {
-        const rows = document.getElementById('setlistEditorRows');
-        rows.innerHTML = draftSetlist.map((s, i) => `
-          <div class="flex gap-2">
-            <input type="text" value="${escapeHtml(s.title)}" placeholder="曲名" oninput="window.__updateSong(${i}, 'title', this.value)" class="flex-1 px-2 py-1 text-xs border rounded" />
-            <input type="text" value="${escapeHtml(s.note)}" placeholder="備註" oninput="window.__updateSong(${i}, 'note', this.value)" class="w-24 px-2 py-1 text-xs border rounded" />
-            <button type="button" onclick="window.__removeSong(${i})" class="text-crimson-600 text-xs px-2">刪除</button>
-          </div>
-        `).join('') || '<div class="text-xs text-warm-muted">尚無曲目</div>';
-      }
-      window.__updateSong = (i, f, v) => { draftSetlist[i][f] = v; };
-      window.__removeSong = (i) => { draftSetlist.splice(i, 1); renderSetlistEditor(); };
-
-      document.getElementById('addSongRowBtn').addEventListener('click', () => { draftSetlist.push({ title: '', note: '' }); renderSetlistEditor(); });
       document.getElementById('openAddModalBtn').addEventListener('click', () => openModal(null));
       document.getElementById('closeEventModalBtn').addEventListener('click', () => eventModal.classList.add('hidden'));
       document.getElementById('cancelEventModalBtn').addEventListener('click', () => eventModal.classList.add('hidden'));
 
       eventForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        submitEventBtn.disabled = true;
+        submitEventBtn.textContent = '同步中...';
+
         const id = document.getElementById('fieldId').value;
         const payload = {
           id: id || `evt-${Date.now()}`,
@@ -574,9 +801,10 @@
           ticketUrl: document.getElementById('fieldTicketUrl').value.trim(),
           notes: document.getElementById('fieldNotes').value.trim(),
           setlistHidden: document.getElementById('fieldSetlistHidden').checked,
-          setlist: draftSetlist.filter(s => s.title.trim())
+          setlist: draftSetlist.map(s => ({ title: (s.title || '').trim(), note: (s.note || '').trim() })).filter(s => s.title)
         };
 
+        if (!Array.isArray(appData.events)) appData.events = [];
         if (id) {
           const idx = appData.events.findIndex(item => item.id === id);
           if (idx !== -1) appData.events[idx] = payload;
@@ -584,8 +812,10 @@
           appData.events.unshift(payload);
         }
 
-        eventModal.classList.add('hidden');
-        await saveToCloud();
+        const ok = await saveToCloud();
+        submitEventBtn.disabled = false;
+        submitEventBtn.textContent = '儲存至雲端';
+        if (ok) eventModal.classList.add('hidden');
       });
 
       eventListContainer.addEventListener('click', async (e) => {
@@ -599,48 +829,68 @@
           else expandedSetlistIds.add(id);
           renderEvents();
         } else if (action === 'edit') {
-          const ev = appData.events.find(item => item.id === id);
+          const ev = (appData.events || []).find(item => item.id === id);
           if (ev) openModal(ev);
         } else if (action === 'delete') {
-          if (confirm('確定要刪除此場次嗎？')) {
-            appData.events = appData.events.filter(item => item.id !== id);
+          if (confirm('確定要刪除此場次嗎？（會同步從雲端刪除）')) {
+            appData.events = (appData.events || []).filter(item => item.id !== id);
             await saveToCloud();
           }
         }
       });
 
-      // Search & Filters
-      searchInput.addEventListener('input', (e) => { searchQuery = e.target.value; clearSearchBtn.classList.toggle('hidden', !searchQuery); renderEvents(); });
-      clearSearchBtn.addEventListener('click', () => { searchQuery = ''; searchInput.value = ''; clearSearchBtn.classList.add('hidden'); renderEvents(); });
+      // Search & Time Filters
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        clearSearchBtn.classList.toggle('hidden', !searchQuery);
+        renderEvents();
+      });
+      clearSearchBtn.addEventListener('click', () => {
+        searchQuery = '';
+        searchInput.value = '';
+        clearSearchBtn.classList.add('hidden');
+        renderEvents();
+      });
       document.querySelectorAll('.time-filter-btn').forEach(b => {
         b.addEventListener('click', () => {
           selectedTimeFilter = b.dataset.timeFilter;
-          document.querySelectorAll('.time-filter-btn').forEach(btn => btn.classList.replace('bg-crimson-700', 'text-warm-muted') || btn.classList.remove('text-white'));
+          document.querySelectorAll('.time-filter-btn').forEach(btn => {
+            btn.classList.remove('bg-crimson-700', 'text-white');
+            btn.classList.add('text-warm-muted');
+          });
           b.classList.add('bg-crimson-700', 'text-white');
           b.classList.remove('text-warm-muted');
           renderEvents();
         });
       });
 
-      // Header Edit Modal
+      // More Menu & Header Edit
+      const moreMenuBtn = document.getElementById('moreMenuBtn');
+      const moreMenuDropdown = document.getElementById('moreMenuDropdown');
+      moreMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); moreMenuDropdown.classList.toggle('hidden'); });
+      document.addEventListener('click', () => moreMenuDropdown.classList.add('hidden'));
+
       const headerModal = document.getElementById('headerModal');
       document.getElementById('editHeaderInfoBtn').addEventListener('click', () => {
-        document.getElementById('headerTitleInput').value = appData.siteMeta.title;
-        document.getElementById('headerAnnouncementInput').value = appData.siteMeta.announcement;
+        document.getElementById('headerTitleInput').value = appData.siteMeta.title || '';
+        document.getElementById('headerSubtitleInput').value = appData.siteMeta.subtitle || '';
+        document.getElementById('headerAnnouncementInput').value = appData.siteMeta.announcement || '';
         headerModal.classList.remove('hidden');
       });
       document.getElementById('cancelHeaderModalBtn').addEventListener('click', () => headerModal.classList.add('hidden'));
       document.getElementById('headerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        appData.siteMeta.title = document.getElementById('headerTitleInput').value.trim();
+        appData.siteMeta.title = document.getElementById('headerTitleInput').value.trim() || 'MOREBEUS';
+        appData.siteMeta.subtitle = document.getElementById('headerSubtitleInput').value.trim();
         appData.siteMeta.announcement = document.getElementById('headerAnnouncementInput').value.trim();
-        headerModal.classList.add('hidden');
-        await saveToCloud();
+        const ok = await saveToCloud();
+        if (ok) headerModal.classList.add('hidden');
       });
 
       document.getElementById('forceSyncBtn').addEventListener('click', fetchFromCloud);
+      document.getElementById('retryFetchBtn').addEventListener('click', fetchFromCloud);
 
-      // Initial fetch
+      // Start initial fetch
       fetchFromCloud();
     })();
   </script>
