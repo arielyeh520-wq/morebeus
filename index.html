@@ -42,31 +42,11 @@
     };
   </script>
   <style>
-    body {
-      background-color: #FAF8F6;
-      color: #1F1715;
-      -webkit-font-smoothing: antialiased;
-    }
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    @keyframes fadeSlide {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .animate-card {
-      animation: fadeSlide 0.24s ease-out both;
-    }
+    body { background-color: #FAF8F6; color: #1F1715; -webkit-font-smoothing: antialiased; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-card { animation: fadeSlide 0.24s ease-out both; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-crimson-100 selection:text-crimson-900">
@@ -74,7 +54,6 @@
   <!-- Top Navigation Bar -->
   <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-warm-border">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-      <!-- Brand Identity -->
       <div class="flex items-center gap-3 min-w-0">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-crimson-700 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm shadow-crimson-900/15">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -85,21 +64,20 @@
           <div class="flex items-center gap-2">
             <h1 id="siteTitleDisplay" class="font-display font-bold text-lg sm:text-xl tracking-tight text-warm-text truncate">MOREBEUS</h1>
             <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-crimson-50 text-crimson-700 border border-crimson-200/80">
-              演出資訊總覽
+              雲端同步版
             </span>
           </div>
           <p id="siteSubtitleDisplay" class="text-xs text-warm-muted truncate">2026 Live Schedule &amp; Event Info</p>
         </div>
       </div>
 
-      <!-- Action Toolbar -->
       <div class="flex items-center gap-2 shrink-0">
         <button
           id="toggleEditModeBtn"
           type="button"
           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium border border-warm-border bg-white text-warm-text hover:bg-warm-tint hover:border-crimson-200 transition-colors cursor-pointer"
         >
-          <svg id="editModeIcon" class="w-4 h-4 text-crimson-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="w-4 h-4 text-crimson-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -117,76 +95,26 @@
           <span>新增演出</span>
         </button>
 
-        <!-- Data Menu Dropdown -->
+        <!-- More Menu -->
         <div class="relative">
           <button
             id="moreMenuBtn"
             type="button"
-            title="資料匯出與管理"
+            title="更多選項"
             class="p-1.5 sm:p-2 rounded-lg border border-warm-border bg-white text-warm-muted hover:text-crimson-700 hover:bg-warm-tint transition-colors cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="1"/>
-              <circle cx="12" cy="5" r="1"/>
-              <circle cx="12" cy="19" r="1"/>
+              <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
             </svg>
           </button>
-          <div
-            id="moreMenuDropdown"
-            class="hidden absolute right-0 mt-2 w-60 rounded-xl bg-white border border-warm-border shadow-lg shadow-stone-900/10 py-1.5 z-40 text-sm"
-          >
-            <button
-              id="editHeaderInfoBtn"
-              type="button"
-              class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2.5 cursor-pointer"
-            >
-              <svg class="w-4 h-4 text-crimson-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 7h16M4 12h10M4 17h7" stroke-linecap="round"/>
-              </svg>
+          <div id="moreMenuDropdown" class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-white border border-warm-border shadow-lg shadow-stone-900/10 py-1.5 z-40 text-sm">
+            <button id="editHeaderInfoBtn" type="button" class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2.5 cursor-pointer">
+              <svg class="w-4 h-4 text-crimson-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7" stroke-linecap="round"/></svg>
               <span>修改標題與公告列</span>
             </button>
-            <button
-              id="exportHtmlBtn"
-              type="button"
-              class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2.5 cursor-pointer"
-            >
-              <svg class="w-4 h-4 text-crimson-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <div>
-                <div class="font-medium">下載更新後 HTML 檔</div>
-                <div class="text-[11px] text-warm-muted">包含所有場次與歌單，可直接部署</div>
-              </div>
-            </button>
-            <button
-              id="exportJsonBtn"
-              type="button"
-              class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2.5 cursor-pointer"
-            >
-              <svg class="w-4 h-4 text-amber-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linecap="round" stroke-linejoin="round"/>
-                <polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>匯出 JSON 備份</span>
-            </button>
-            <label class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2.5 cursor-pointer">
-              <svg class="w-4 h-4 text-amber-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>匯入 JSON 備份</span>
-              <input id="importJsonInput" type="file" accept=".json" class="hidden" />
-            </label>
-            <div class="my-1 border-t border-warm-border"></div>
-            <button
-              id="resetDefaultBtn"
-              type="button"
-              class="w-full px-3.5 py-2 text-left text-crimson-700 hover:bg-crimson-50 flex items-center gap-2.5 cursor-pointer"
-            >
-              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M3 3v5h5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>重設為初始範例資料</span>
+            <button id="forceSyncBtn" type="button" class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2.5 cursor-pointer">
+              <svg class="w-4 h-4 text-crimson-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.73-5.73" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>重新從雲端同步資料</span>
             </button>
           </div>
         </div>
@@ -199,23 +127,18 @@
     <div class="max-w-5xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-crimson-900">
       <div class="flex items-center gap-2">
         <span class="inline-block w-2 h-2 rounded-full bg-crimson-600 animate-pulse"></span>
-        <span><strong>編輯模式已開啟：</strong>可直接修改場次、編輯演出歌單、調整排序或刪除場次（保密歌單也會一併顯示）。</span>
+        <span><strong>雲端編輯模式：</strong>修改或新增演出後點擊儲存，將直接同步至雲端，所有人重新整理即可看到！</span>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="bannerExportHtmlBtn" type="button" class="px-2.5 py-1 rounded-md bg-crimson-700 text-white text-xs font-medium hover:bg-crimson-800 cursor-pointer">
-          下載更新後 HTML
-        </button>
-        <button id="bannerCloseEditBtn" type="button" class="px-2.5 py-1 rounded-md bg-white border border-crimson-200 text-crimson-800 text-xs font-medium hover:bg-crimson-100/60 cursor-pointer">
-          完成編輯
-        </button>
-      </div>
+      <button id="bannerCloseEditBtn" type="button" class="px-2.5 py-1 rounded-md bg-white border border-crimson-200 text-crimson-800 text-xs font-medium hover:bg-crimson-100 cursor-pointer">
+        完成編輯
+      </button>
     </div>
   </div>
 
   <!-- Main Content -->
   <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
 
-    <!-- Announcement / Info Bar -->
+    <!-- Announcement Bar -->
     <section class="bg-white border border-warm-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
       <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-crimson-700 to-amber-600"></div>
       <div class="space-y-1 pl-2">
@@ -223,20 +146,18 @@
           <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-crimson-700 text-white tracking-wide">
             公告 INFO
           </span>
-          <span id="lastUpdatedLabel" class="text-xs text-warm-muted">最後更新：2026/11/16</span>
+          <span id="lastUpdatedLabel" class="text-xs text-warm-muted">最後更新：--</span>
         </div>
         <p id="announcementText" class="text-sm text-warm-text leading-relaxed">
-          歡迎查看 MOREBEUS 最新專場、音樂祭與巡演資訊。點擊場次下方「演出歌單」可查看當日曲目；如需更新場次與歌單，請點擊右上角「編輯模式」。
+          載入中...
         </p>
       </div>
       <div class="flex items-center gap-3 shrink-0 text-xs text-warm-muted border-t sm:border-t-0 pt-2.5 sm:pt-0 border-warm-border pl-2 sm:pl-0">
         <div class="px-3 py-1.5 rounded-lg bg-warm-tint border border-warm-border/70">
-          <span class="text-warm-muted">總場次</span>
-          <strong id="totalCountStat" class="ml-1.5 text-sm font-display text-warm-text">0</strong>
+          <span>總場次</span><strong id="totalCountStat" class="ml-1.5 text-sm font-display text-warm-text">0</strong>
         </div>
         <div class="px-3 py-1.5 rounded-lg bg-crimson-50/70 border border-crimson-200/70">
-          <span class="text-crimson-800">即將演出</span>
-          <strong id="upcomingCountStat" class="ml-1.5 text-sm font-display text-crimson-700">0</strong>
+          <span class="text-crimson-800">即將演出</span><strong id="upcomingCountStat" class="ml-1.5 text-sm font-display text-crimson-700">0</strong>
         </div>
       </div>
     </section>
@@ -244,474 +165,132 @@
     <!-- Search & Filter Controls -->
     <section class="space-y-3">
       <div class="flex flex-col sm:flex-row gap-2.5">
-        <!-- Search Input -->
         <div class="relative flex-1">
-          <svg class="w-4 h-4 text-warm-subtle absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35" stroke-linecap="round"/>
-          </svg>
-          <input
-            id="searchInput"
-            type="text"
-            placeholder="搜尋活動名稱、場館、共演樂團或歌單曲目..."
-            class="w-full pl-10 pr-9 py-2.5 rounded-xl bg-white border border-warm-border text-sm text-warm-text placeholder:text-warm-subtle focus:outline-none focus:border-crimson-600 focus:ring-2 focus:ring-crimson-100 transition-all"
-          />
-          <button
-            id="clearSearchBtn"
-            type="button"
-            class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-warm-subtle hover:text-crimson-700 cursor-pointer"
-            title="清除搜尋"
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/>
-            </svg>
+          <svg class="w-4 h-4 text-warm-subtle absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" stroke-linecap="round"/></svg>
+          <input id="searchInput" type="text" placeholder="搜尋活動名稱、場館、共演樂團或歌單曲目..." class="w-full pl-10 pr-9 py-2.5 rounded-xl bg-white border border-warm-border text-sm text-warm-text placeholder:text-warm-subtle focus:outline-none focus:border-crimson-600 focus:ring-2 focus:ring-crimson-100 transition-all" />
+          <button id="clearSearchBtn" type="button" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-warm-subtle hover:text-crimson-700 cursor-pointer">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
           </button>
         </div>
-
-        <!-- Time Scope Toggle -->
-        <div class="inline-flex rounded-xl bg-white border border-warm-border p-1 shrink-0 self-start sm:self-auto">
-          <button
-            type="button"
-            data-time-filter="all"
-            class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-crimson-700 text-white transition-colors cursor-pointer"
-          >
-            全部場次
-          </button>
-          <button
-            type="button"
-            data-time-filter="upcoming"
-            class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer"
-          >
-            即將演出
-          </button>
-          <button
-            type="button"
-            data-time-filter="past"
-            class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer"
-          >
-            已結束
-          </button>
+        <div class="inline-flex rounded-xl bg-white border border-warm-border p-1 shrink-0">
+          <button type="button" data-time-filter="all" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-crimson-700 text-white transition-colors cursor-pointer">全部場次</button>
+          <button type="button" data-time-filter="upcoming" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer">即將演出</button>
+          <button type="button" data-time-filter="past" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer">已結束</button>
         </div>
       </div>
-
-      <!-- City Filter Pills -->
-      <div id="cityFilterBar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-        <!-- Populated dynamically -->
-      </div>
+      <div id="cityFilterBar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
     </section>
 
-    <!-- Event List Container -->
+    <!-- Event List -->
     <section id="eventListContainer" class="space-y-3.5">
-      <!-- Event Cards rendered by JS -->
+      <div class="text-center py-12 text-warm-muted text-sm">正在從雲端同步載入演出資訊...</div>
     </section>
 
     <!-- Empty State -->
     <div id="emptyState" class="hidden bg-white border border-warm-border rounded-2xl p-10 text-center space-y-3">
-      <div class="w-12 h-12 rounded-full bg-crimson-50 text-crimson-700 mx-auto flex items-center justify-center">
-        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-          <line x1="16" y1="2" x2="16" y2="6"/>
-          <line x1="8" y1="2" x2="8" y2="6"/>
-          <line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
-      </div>
       <h3 class="text-base font-semibold text-warm-text">找不到符合條件的演出場次</h3>
-      <p class="text-sm text-warm-muted max-w-md mx-auto">您可以嘗試切換城市、時間篩選條件，或點擊右上角「新增演出」建立新的場次資訊。</p>
-      <div class="pt-1">
-        <button id="resetFiltersBtn" type="button" class="px-4 py-2 rounded-lg border border-warm-border bg-white text-xs font-medium text-warm-text hover:bg-warm-tint cursor-pointer">
-          重設所有篩選條件
-        </button>
-      </div>
     </div>
-
   </main>
 
   <!-- Footer -->
   <footer class="border-t border-warm-border bg-white mt-12">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-warm-muted">
-      <div class="flex items-center gap-2">
-        <span class="font-display font-bold text-crimson-800">MOREBEUS</span>
-        <span>•</span>
-        <span>演出資訊與歌單總覽</span>
-      </div>
-      <div>
-        資料自動儲存於本機瀏覽器；部署更新請透過右上角選單下載 HTML 檔案。
-      </div>
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex items-center justify-between text-xs text-warm-muted">
+      <span class="font-display font-bold text-crimson-800">MOREBEUS</span>
+      <span>雲端即時同步演出資訊總覽</span>
     </div>
   </footer>
 
-  <!-- Add / Edit Event Modal -->
+  <!-- Add / Edit Modal -->
   <div id="eventModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full shadow-xl overflow-hidden my-auto animate-card">
       <div class="px-5 py-4 border-b border-warm-border bg-warm-tint/70 flex items-center justify-between">
         <h2 id="eventModalTitle" class="text-base font-bold text-warm-text">新增演出資訊</h2>
-        <button type="button" id="closeEventModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 hover:bg-white cursor-pointer">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/>
-          </svg>
+        <button type="button" id="closeEventModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 cursor-pointer">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
         </button>
       </div>
-
       <form id="eventForm" class="p-5 space-y-4 max-h-[82vh] overflow-y-auto">
         <input type="hidden" id="fieldId" />
-
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           <div class="sm:col-span-2">
-            <label class="block text-xs font-medium text-warm-text mb-1">活動 / 演出名稱 <span class="text-crimson-600">*</span></label>
-            <input id="fieldTitle" type="text" required placeholder="例如：MOREBEUS 2026 秋季專場《迴圈之外》" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
+            <label class="block text-xs font-medium text-warm-text mb-1">活動名稱 <span class="text-crimson-600">*</span></label>
+            <input id="fieldTitle" type="text" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
           </div>
           <div>
             <label class="block text-xs font-medium text-warm-text mb-1">演出狀態</label>
             <select id="fieldStatus" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm bg-white focus:outline-none focus:border-crimson-600">
-              <option value="售票中">售票中</option>
-              <option value="即將開賣">即將開賣</option>
-              <option value="免費入場">免費入場</option>
-              <option value="已完售">已完售</option>
-              <option value="已結束">已結束</option>
+              <option value="售票中">售票中</option><option value="即將開賣">即將開賣</option><option value="免費入場">免費入場</option><option value="已完售">已完售</option><option value="已結束">已結束</option>
             </select>
           </div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-          <div>
-            <label class="block text-xs font-medium text-warm-text mb-1">演出日期 <span class="text-crimson-600">*</span></label>
-            <input id="fieldDate" type="date" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-warm-text mb-1">進場時間 (OPEN)</label>
-            <input id="fieldOpenTime" type="text" placeholder="19:00" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-warm-text mb-1">開演時間 (START)</label>
-            <input id="fieldStartTime" type="text" placeholder="19:30" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-          </div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">日期 <span class="text-crimson-600">*</span></label><input id="fieldDate" type="date" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">進場 (OPEN)</label><input id="fieldOpenTime" type="text" placeholder="19:00" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">開演 (START)</label><input id="fieldStartTime" type="text" placeholder="19:30" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-          <div>
-            <label class="block text-xs font-medium text-warm-text mb-1">城市 <span class="text-crimson-600">*</span></label>
-            <input id="fieldCity" type="text" required list="citySuggestions" placeholder="例如：台北、台南" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-            <datalist id="citySuggestions">
-              <option value="台北"></option>
-              <option value="新北"></option>
-              <option value="桃園"></option>
-              <option value="台中"></option>
-              <option value="台南"></option>
-              <option value="高雄"></option>
-              <option value="花蓮"></option>
-            </datalist>
-          </div>
-          <div class="sm:col-span-2">
-            <label class="block text-xs font-medium text-warm-text mb-1">演出場館 <span class="text-crimson-600">*</span></label>
-            <input id="fieldVenue" type="text" required placeholder="例如：Legacy Taipei 傳 音樂展演空間" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-          </div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">城市 <span class="text-crimson-600">*</span></label><input id="fieldCity" type="text" required placeholder="台北" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div class="sm:col-span-2"><label class="block text-xs font-medium text-warm-text mb-1">場館 <span class="text-crimson-600">*</span></label><input id="fieldVenue" type="text" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         </div>
-
-        <div>
-          <label class="block text-xs font-medium text-warm-text mb-1">場館地址（選填，用於地圖連結）</label>
-          <input id="fieldAddress" type="text" placeholder="例如：台北市中正區八德路一段1號（華山1914文化創意產業園區中5A館）" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-warm-text mb-1">演出陣容 / 共演樂團（請用逗號或頓號分隔）</label>
-          <input id="fieldLineup" type="text" placeholder="例如：MOREBEUS、共演嘉賓 A、共演嘉賓 B" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-        </div>
-
+        <div><label class="block text-xs font-medium text-warm-text mb-1">地址</label><input id="fieldAddress" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+        <div><label class="block text-xs font-medium text-warm-text mb-1">演出陣容 (逗號分隔)</label><input id="fieldLineup" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div>
-            <label class="block text-xs font-medium text-warm-text mb-1">票價資訊</label>
-            <input id="fieldPrice" type="text" placeholder="例如：預售 $800 / 現場 $1,000" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-warm-text mb-1">活動 / 購票連結（選填）</label>
-            <input id="fieldTicketUrl" type="url" placeholder="https://..." class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-          </div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">票價</label><input id="fieldPrice" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">購票連結</label><input id="fieldTicketUrl" type="url" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         </div>
 
-        <!-- Setlist Editor Box -->
+        <!-- Setlist -->
         <div class="rounded-xl border border-crimson-200/80 bg-crimson-50/40 p-3.5 space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2">
-              <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-crimson-700 text-white">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="6" cy="18" r="3"/>
-                  <circle cx="18" cy="16" r="3"/>
-                </svg>
-              </span>
-              <div>
-                <h3 class="text-xs font-bold text-warm-text">本場演出歌單 (Setlist)</h3>
-                <p class="text-[11px] text-warm-muted">可新增曲目、標註安可或特別編曲，也可先設為演出前保密</p>
-              </div>
-            </div>
-            <label class="inline-flex items-center gap-1.5 text-xs text-warm-text cursor-pointer select-none bg-white px-2.5 py-1 rounded-lg border border-warm-border">
-              <input id="fieldSetlistHidden" type="checkbox" class="rounded accent-crimson-700 cursor-pointer" />
-              <span>演出前保密（僅編輯模式可見）</span>
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-warm-text">演出歌單 (Setlist)</h3>
+            <label class="inline-flex items-center gap-1.5 text-xs cursor-pointer bg-white px-2.5 py-1 rounded-lg border border-warm-border">
+              <input id="fieldSetlistHidden" type="checkbox" class="accent-crimson-700" /><span>演出前保密</span>
             </label>
           </div>
-
-          <!-- Song List Rows -->
-          <div id="setlistEditorRows" class="space-y-2">
-            <!-- Populated dynamically -->
-          </div>
-
-          <!-- Add Single Song or Quick Paste -->
-          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-            <button
-              type="button"
-              id="addSongRowBtn"
-              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-crimson-200 text-xs font-medium text-crimson-700 hover:bg-crimson-50 cursor-pointer"
-            >
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
-              </svg>
-              <span>新增一首歌曲</span>
-            </button>
-            <button
-              type="button"
-              id="toggleBulkPasteBtn"
-              class="text-xs text-warm-muted hover:text-crimson-700 underline underline-offset-2 cursor-pointer"
-            >
-              快速貼上多行歌單
-            </button>
-          </div>
-
-          <!-- Bulk Paste Area -->
-          <div id="bulkPasteBox" class="hidden space-y-2 pt-2 border-t border-crimson-200/60">
-            <textarea
-              id="bulkPasteTextarea"
-              rows="3"
-              placeholder="每行輸入一首曲目，例如：&#10;莫比烏斯環&#10;夜行列車 (Acoustic)&#10;無名超人 [ENCORE]"
-              class="w-full px-3 py-2 rounded-lg border border-warm-border bg-white text-xs focus:outline-none focus:border-crimson-600"
-            ></textarea>
-            <div class="flex justify-end gap-2">
-              <button type="button" id="cancelBulkPasteBtn" class="px-2.5 py-1 rounded-md text-xs text-warm-muted hover:text-warm-text cursor-pointer">取消</button>
-              <button type="button" id="applyBulkPasteBtn" class="px-3 py-1 rounded-md bg-crimson-700 text-white text-xs font-medium hover:bg-crimson-800 cursor-pointer">匯入至上方列表</button>
-            </div>
-          </div>
+          <div id="setlistEditorRows" class="space-y-2"></div>
+          <button type="button" id="addSongRowBtn" class="px-3 py-1 rounded-lg bg-white border border-crimson-200 text-xs text-crimson-700 cursor-pointer">+ 新增歌曲</button>
         </div>
 
-        <div>
-          <label class="block text-xs font-medium text-warm-text mb-1">備註說明（選填）</label>
-          <textarea id="fieldNotes" rows="2" placeholder="例如：全區站席、憑票優先入場、現場販售限量周邊..." class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600"></textarea>
-        </div>
-
-        <div class="pt-2 border-t border-warm-border flex items-center justify-end gap-2.5">
-          <button type="button" id="cancelEventModalBtn" class="px-4 py-2 rounded-lg border border-warm-border text-sm font-medium text-warm-muted hover:text-warm-text hover:bg-warm-tint cursor-pointer">
-            取消
-          </button>
-          <button type="submit" class="px-5 py-2 rounded-lg bg-crimson-700 text-white text-sm font-medium hover:bg-crimson-800 shadow-sm cursor-pointer">
-            儲存演出資訊
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Edit Header / Announcement Modal -->
-  <div id="headerModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white border border-warm-border rounded-2xl max-w-lg w-full shadow-xl overflow-hidden animate-card">
-      <div class="px-5 py-4 border-b border-warm-border bg-warm-tint/70 flex items-center justify-between">
-        <h2 class="text-base font-bold text-warm-text">修改頁面標題與公告</h2>
-        <button type="button" id="closeHeaderModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 hover:bg-white cursor-pointer">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <form id="headerForm" class="p-5 space-y-4">
-        <div>
-          <label class="block text-xs font-medium text-warm-text mb-1">主標題</label>
-          <input id="headerTitleInput" type="text" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-warm-text mb-1">副標題</label>
-          <input id="headerSubtitleInput" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-warm-text mb-1">頂部公告內容</label>
-          <textarea id="headerAnnouncementInput" rows="3" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600"></textarea>
-        </div>
+        <div><label class="block text-xs font-medium text-warm-text mb-1">備註</label><textarea id="fieldNotes" rows="2" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600"></textarea></div>
         <div class="pt-2 border-t border-warm-border flex justify-end gap-2">
-          <button type="button" id="cancelHeaderModalBtn" class="px-4 py-2 rounded-lg border border-warm-border text-sm font-medium text-warm-muted hover:bg-warm-tint cursor-pointer">取消</button>
-          <button type="submit" class="px-4 py-2 rounded-lg bg-crimson-700 text-white text-sm font-medium hover:bg-crimson-800 cursor-pointer">儲存設定</button>
+          <button type="button" id="cancelEventModalBtn" class="px-4 py-2 rounded-lg border border-warm-border text-sm text-warm-muted cursor-pointer">取消</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-crimson-700 text-white text-sm font-medium hover:bg-crimson-800 cursor-pointer">儲存至雲端</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Toast Notification -->
+  <!-- Header Modal -->
+  <div id="headerModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white border border-warm-border rounded-2xl max-w-lg w-full shadow-xl p-5 space-y-4">
+      <h2 class="text-base font-bold text-warm-text">修改標題與公告</h2>
+      <form id="headerForm" class="space-y-3">
+        <div><label class="block text-xs font-medium mb-1">主標題</label><input id="headerTitleInput" type="text" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm" /></div>
+        <div><label class="block text-xs font-medium mb-1">公告內容</label><textarea id="headerAnnouncementInput" rows="3" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm"></textarea></div>
+        <div class="flex justify-end gap-2 pt-2"><button type="button" id="cancelHeaderModalBtn" class="px-4 py-2 text-xs border rounded-lg">取消</button><button type="submit" class="px-4 py-2 text-xs bg-crimson-700 text-white rounded-lg">儲存</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-200">
     <div class="bg-stone-900 text-white text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 border border-crimson-800/40">
       <span class="w-2 h-2 rounded-full bg-crimson-400"></span>
-      <span id="toastMessage">已儲存變更</span>
+      <span id="toastMessage">已同步</span>
     </div>
   </div>
 
-  <!-- Embedded Default Data -->
-  <script id="default-data-script" type="application/json">
-  {
-    "siteMeta": {
-      "title": "MOREBEUS",
-      "subtitle": "2026 Live Schedule & Event Info",
-      "announcement": "歡迎查看 MOREBEUS 最新專場、音樂祭與巡演資訊。點擊場次下方「演出歌單」可查看當日曲目；如需更新場次與歌單，請點擊右上角「編輯模式」。",
-      "lastUpdated": "2026/11/16"
-    },
-    "events": [
-      {
-        "id": "evt-2026-1128",
-        "title": "MOREBEUS 2026 冬季專場《無限迴圈之夜》",
-        "date": "2026-11-28",
-        "openTime": "19:00",
-        "startTime": "19:30",
-        "city": "台北",
-        "venue": "Legacy Taipei 傳 音樂展演空間",
-        "address": "台北市中正區八德路一段1號（華山1914文化創意產業園區中5A館）",
-        "lineup": ["MOREBEUS", "特別嘉賓：破曉之聲"],
-        "price": "單人預售 $850 / 雙人套票 $1,500 / 現場 $1,000",
-        "status": "售票中",
-        "ticketUrl": "https://www.indievox.com/",
-        "notes": "全區搖滾站席，憑票券序號排隊入場；現場首賣冬季限定毛巾與貼紙組。",
-        "setlistHidden": false,
-        "setlist": [
-          { "title": "Intro：無限邊界", "note": "" },
-          { "title": "莫比烏斯環", "note": "" },
-          { "title": "赤色訊號", "note": "" },
-          { "title": "午夜便利商店", "note": "Acoustic 不插電版" },
-          { "title": "逆光飛行", "note": "feat. 破曉之聲" },
-          { "title": "時間軸之外", "note": "" },
-          { "title": "直到天亮以前", "note": "ENCORE" }
-        ]
-      },
-      {
-        "id": "evt-2026-1212",
-        "title": "南國冬日聲響祭 — 台南場",
-        "date": "2026-12-12",
-        "openTime": "14:00",
-        "startTime": "17:20",
-        "city": "台南",
-        "venue": "TCRC Livehouse",
-        "address": "台南市中西區西門路二段314號B1",
-        "lineup": ["MOREBEUS", "海風俱樂部", "城市邊緣人"],
-        "price": "預售 $600 / 現場 $750（含飲品一杯）",
-        "status": "售票中",
-        "ticketUrl": "https://www.klook.com/",
-        "notes": "MOREBEUS 預計於 17:20 登台演出 45 分鐘，演出後於門口開放簽名合照。",
-        "setlistHidden": false,
-        "setlist": [
-          { "title": "南風吹起的時候", "note": "" },
-          { "title": "赤色訊號", "note": "" },
-          { "title": "未完待續的信", "note": "" },
-          { "title": "莫比烏斯環", "note": "" },
-          { "title": "奔向海平面", "note": "" }
-        ]
-      },
-      {
-        "id": "evt-2026-1226",
-        "title": "年末跨夜企劃《SOUND LOOP 2026》",
-        "date": "2026-12-26",
-        "openTime": "18:30",
-        "startTime": "19:00",
-        "city": "台中",
-        "venue": "Legacy Taichung 傳 音樂展演空間",
-        "address": "台中市西屯區安和路117號",
-        "lineup": ["MOREBEUS", "霓虹浪潮", "深夜電台"],
-        "price": "預售 $900 / 現場 $1,100",
-        "status": "即將開賣",
-        "ticketUrl": "",
-        "notes": "11/20 中午 12:00 正式啟售，詳情請鎖定官方社群公告。",
-        "setlistHidden": true,
-        "setlist": [
-          { "title": "未公開新曲 A", "note": "首演" },
-          { "title": "莫比烏斯環", "note": "" },
-          { "title": "倒數計時", "note": "ENCORE" }
-        ]
-      },
-      {
-        "id": "evt-2026-1010",
-        "title": "港都海風音樂節 — 夕陽舞台",
-        "date": "2026-10-10",
-        "openTime": "13:00",
-        "startTime": "16:40",
-        "city": "高雄",
-        "venue": "駁二藝術特區 大義倉庫戶外廣場",
-        "address": "高雄市鹽埕區大義街2號",
-        "lineup": ["MOREBEUS", "多組國內外獨立樂團"],
-        "price": "免費入場",
-        "status": "已結束",
-        "ticketUrl": "",
-        "notes": "感謝高雄樂迷熱情參與，大合唱非常震撼！",
-        "setlistHidden": false,
-        "setlist": [
-          { "title": "港都夜雨（改編版）", "note": "高雄限定" },
-          { "title": "赤色訊號", "note": "" },
-          { "title": "逆光飛行", "note": "" },
-          { "title": "莫比烏斯環", "note": "" }
-        ]
-      }
-    ]
-  }
-  </script>
-
   <script>
+    // ==========================================
+    // 請在此處填入您的 JSONBin 設定
+    // ==========================================
+    const JSONBIN_BIN_ID = "6afb1b9cac6210605a8c35c6";
+    const JSONBIN_API_KEY = "$2a$10$XgIv7VzSD9M.Y/QXcKjIDOL0wSzyp48VzBdM.D4.fuClOadKw2ssi";
+    // ==========================================
+
     (function () {
-      const STORAGE_KEY = 'morebeus_event_info_v2';
       const WEEKDAYS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
-
-      // Read initial data from embedded JSON script tag
-      function getEmbeddedDefaultData() {
-        try {
-          const raw = document.getElementById('default-data-script').textContent;
-          return JSON.parse(raw);
-        } catch (e) {
-          return {
-            siteMeta: {
-              title: 'MOREBEUS',
-              subtitle: '2026 Live Schedule & Event Info',
-              announcement: '歡迎查看 MOREBEUS 最新演出資訊與歌單。',
-              lastUpdated: new Date().toISOString().slice(0, 10).replace(/-/g, '/')
-            },
-            events: []
-          };
-        }
-      }
-
-      function normalizeEvent(ev) {
-        return {
-          ...ev,
-          setlistHidden: Boolean(ev.setlistHidden),
-          setlist: Array.isArray(ev.setlist)
-            ? ev.setlist.map(item =>
-                typeof item === 'string'
-                  ? { title: item, note: '' }
-                  : { title: item.title || '', note: item.note || '' }
-              ).filter(item => item.title.trim() !== '')
-            : []
-        };
-      }
-
-      // Load state from localStorage or fallback to embedded default
-      function loadState() {
-        const fallback = getEmbeddedDefaultData();
-        fallback.events = (fallback.events || []).map(normalizeEvent);
-        try {
-          const saved = localStorage.getItem(STORAGE_KEY);
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            if (parsed && Array.isArray(parsed.events)) {
-              return {
-                siteMeta: { ...fallback.siteMeta, ...(parsed.siteMeta || {}) },
-                events: parsed.events.map(normalizeEvent)
-              };
-            }
-          }
-        } catch (err) {
-          console.warn('無法讀取 localStorage，使用預設資料', err);
-        }
-        return fallback;
-      }
-
-      let appData = loadState();
+      let appData = { siteMeta: { title: "MOREBEUS", subtitle: "2026 Live Schedule", announcement: "載入中..." }, events: [] };
       let isEditMode = false;
       let selectedCity = '全部';
       let selectedTimeFilter = 'all';
@@ -719,7 +298,6 @@
       let expandedSetlistIds = new Set();
       let draftSetlist = [];
 
-      // DOM References
       const siteTitleDisplay = document.getElementById('siteTitleDisplay');
       const siteSubtitleDisplay = document.getElementById('siteSubtitleDisplay');
       const announcementText = document.getElementById('announcementText');
@@ -735,25 +313,54 @@
       const toggleEditModeBtn = document.getElementById('toggleEditModeBtn');
       const editModeLabel = document.getElementById('editModeLabel');
 
-      function saveState(updateTimestamp = true) {
-        if (updateTimestamp) {
-          const now = new Date();
-          const yyyy = now.getFullYear();
-          const mm = String(now.getMonth() + 1).padStart(2, '0');
-          const dd = String(now.getDate()).padStart(2, '0');
-          appData.siteMeta.lastUpdated = `${yyyy}/${mm}/${dd}`;
+      async function fetchFromCloud() {
+        if (!JSONBIN_BIN_ID || JSONBIN_BIN_ID.includes("請貼上")) {
+          alert("尚未設定 JSONBin Bin ID，請修改程式碼底部的設定！");
+          return;
         }
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-        } catch (e) {
-          console.error('儲存失敗', e);
+          const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+            headers: { "X-Master-Key": JSONBIN_API_KEY }
+          });
+          const json = await res.json();
+          if (json && json.record) {
+            appData = json.record;
+            renderAll();
+          }
+        } catch (err) {
+          console.error("雲端載入失敗", err);
+          showToast("雲端載入失敗，請檢查網路或設定");
+        }
+      }
+
+      async function saveToCloud() {
+        const now = new Date();
+        appData.siteMeta.lastUpdated = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+        try {
+          showToast("正在同步至雲端...");
+          const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Master-Key": JSONBIN_API_KEY
+            },
+            body: JSON.stringify(appData)
+          });
+          if (res.ok) {
+            showToast("已成功同步至雲端！其他人重新整理即可看到");
+            renderAll();
+          } else {
+            throw new Error("儲存失敗");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("同步雲端失敗，請檢查 API Key 是否正確。");
         }
       }
 
       function showToast(msg) {
         const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        toastMessage.textContent = msg;
+        document.getElementById('toastMessage').textContent = msg;
         toast.classList.remove('opacity-0', 'translate-y-2');
         toast.classList.add('opacity-100', 'translate-y-0');
         clearTimeout(window.__toastTimer);
@@ -765,10 +372,7 @@
 
       function getTodayStr() {
         const d = new Date();
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}`;
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
       }
 
       function isEventPast(ev) {
@@ -781,122 +385,59 @@
         if (!dateStr) return { year: '----', monthDay: '--/--', weekday: '' };
         const [y, m, d] = dateStr.split('-').map(Number);
         const dt = new Date(y, (m || 1) - 1, d || 1);
-        return {
-          year: String(y),
-          monthDay: `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`,
-          weekday: WEEKDAYS[dt.getDay()] || ''
-        };
-      }
-
-      function getStatusBadgeClass(status, past) {
-        if (past || status === '已結束') {
-          return 'bg-stone-100 text-stone-500 border-stone-200';
-        }
-        switch (status) {
-          case '售票中':
-            return 'bg-crimson-50 text-crimson-700 border-crimson-200';
-          case '即將開賣':
-            return 'bg-amber-50 text-amber-800 border-amber-200';
-          case '免費入場':
-            return 'bg-orange-50 text-orange-700 border-orange-200';
-          case '已完售':
-            return 'bg-rose-100 text-rose-800 border-rose-300';
-          default:
-            return 'bg-stone-100 text-stone-700 border-stone-200';
-        }
+        return { year: String(y), monthDay: `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`, weekday: WEEKDAYS[dt.getDay()] || '' };
       }
 
       function escapeHtml(str) {
         if (!str) return '';
-        return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
       }
 
-      function renderHeaderAndStats() {
+      function renderAll() {
         siteTitleDisplay.textContent = appData.siteMeta.title || 'MOREBEUS';
         siteSubtitleDisplay.textContent = appData.siteMeta.subtitle || '';
         announcementText.textContent = appData.siteMeta.announcement || '';
         lastUpdatedLabel.textContent = `最後更新：${appData.siteMeta.lastUpdated || '-'}`;
 
-        const total = appData.events.length;
-        const upcoming = appData.events.filter(ev => !isEventPast(ev)).length;
+        const total = (appData.events || []).length;
+        const upcoming = (appData.events || []).filter(ev => !isEventPast(ev)).length;
         totalCountStat.textContent = total;
         upcomingCountStat.textContent = upcoming;
-      }
 
-      function renderCityFilters() {
+        // Cities
         const cities = ['全部'];
-        appData.events.forEach(ev => {
+        (appData.events || []).forEach(ev => {
           const c = (ev.city || '').trim();
           if (c && !cities.includes(c)) cities.push(c);
         });
-
-        if (!cities.includes(selectedCity)) {
-          selectedCity = '全部';
-        }
+        if (!cities.includes(selectedCity)) selectedCity = '全部';
 
         cityFilterBar.innerHTML = cities.map(city => {
           const active = city === selectedCity;
-          const count = city === '全部'
-            ? appData.events.length
-            : appData.events.filter(e => (e.city || '').trim() === city).length;
-          return `
-            <button
-              type="button"
-              data-city="${escapeHtml(city)}"
-              class="city-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap transition-colors cursor-pointer ${
-                active
-                  ? 'bg-crimson-700 text-white border-crimson-700 shadow-xs'
-                  : 'bg-white text-warm-muted border-warm-border hover:border-crimson-300 hover:text-crimson-800'
-              }"
-            >
-              <span>${escapeHtml(city)}</span>
-              <span class="text-[11px] ${active ? 'text-crimson-100' : 'text-warm-subtle'}">${count}</span>
-            </button>
-          `;
+          const count = city === '全部' ? total : (appData.events || []).filter(e => (e.city || '').trim() === city).length;
+          return `<button type="button" data-city="${escapeHtml(city)}" class="city-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border cursor-pointer ${active ? 'bg-crimson-700 text-white border-crimson-700' : 'bg-white text-warm-muted border-warm-border'}">${escapeHtml(city)} <span class="text-[11px]">${count}</span></button>`;
         }).join('');
 
         cityFilterBar.querySelectorAll('.city-pill').forEach(btn => {
-          btn.addEventListener('click', () => {
-            selectedCity = btn.dataset.city;
-            renderAll();
-          });
+          btn.addEventListener('click', () => { selectedCity = btn.dataset.city; renderEvents(); });
         });
+
+        renderEvents();
       }
 
       function renderEvents() {
         const q = searchQuery.trim().toLowerCase();
+        const events = appData.events || [];
 
-        const filtered = appData.events.filter(ev => {
+        const filtered = events.filter(ev => {
           const past = isEventPast(ev);
           if (selectedTimeFilter === 'upcoming' && past) return false;
           if (selectedTimeFilter === 'past' && !past) return false;
-
-          if (selectedCity !== '全部' && (ev.city || '').trim() !== selectedCity) {
-            return false;
-          }
-
+          if (selectedCity !== '全部' && (ev.city || '').trim() !== selectedCity) return false;
           if (q) {
-            const visibleSongs = (!ev.setlistHidden || isEditMode)
-              ? (ev.setlist || []).map(s => `${s.title} ${s.note}`).join(' ')
-              : '';
-            const haystack = [
-              ev.title,
-              ev.city,
-              ev.venue,
-              ev.address,
-              ev.price,
-              ev.notes,
-              ...(ev.lineup || []),
-              visibleSongs
-            ].join(' ').toLowerCase();
+            const haystack = [ev.title, ev.city, ev.venue, ev.address, ev.price, ev.notes, ...(ev.lineup || [])].join(' ').toLowerCase();
             if (!haystack.includes(q)) return false;
           }
-
           return true;
         });
 
@@ -908,527 +449,70 @@
 
         emptyState.classList.add('hidden');
 
-        eventListContainer.innerHTML = filtered.map((ev) => {
-          const realIndex = appData.events.findIndex(item => item.id === ev.id);
+        eventListContainer.innerHTML = filtered.map(ev => {
+          const realIndex = events.findIndex(item => item.id === ev.id);
           const past = isEventPast(ev);
           const { year, monthDay, weekday } = formatDateParts(ev.date);
           const displayStatus = past && ev.status !== '已結束' ? '已結束' : (ev.status || '售票中');
-          const badgeClass = getStatusBadgeClass(displayStatus, past);
-          const mapQuery = encodeURIComponent(ev.address || `${ev.city || ''} ${ev.venue || ''}`);
-          const mapUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
-
-          const lineupHtml = (ev.lineup && ev.lineup.length > 0)
-            ? ev.lineup.map(artist => {
-                const isMain = artist.toUpperCase().includes('MOREBEUS');
-                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs ${
-                  isMain
-                    ? 'bg-crimson-700 text-white font-medium'
-                    : 'bg-warm-tint text-warm-text border border-warm-border/80'
-                }">${escapeHtml(artist)}</span>`;
-              }).join('')
-            : '';
-
-          const timeString = [
-            ev.openTime ? `OPEN ${escapeHtml(ev.openTime)}` : '',
-            ev.startTime ? `START ${escapeHtml(ev.startTime)}` : ''
-          ].filter(Boolean).join(' / ');
-
-          // Setlist Display Logic
           const songs = ev.setlist || [];
-          const hasSongs = songs.length > 0;
-          const canViewSetlist = hasSongs && (!ev.setlistHidden || isEditMode);
+          const canViewSetlist = songs.length > 0 && (!ev.setlistHidden || isEditMode);
           const isSetlistExpanded = expandedSetlistIds.has(ev.id);
 
-          let setlistSectionHtml = '';
-          if (canViewSetlist) {
-            setlistSectionHtml = `
-              <div class="pt-2.5 border-t border-warm-border/70">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <button
-                    type="button"
-                    data-action="toggle-setlist"
-                    data-id="${escapeHtml(ev.id)}"
-                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                      isSetlistExpanded
-                        ? 'bg-crimson-700 text-white'
-                        : 'bg-crimson-50 text-crimson-800 border border-crimson-200/80 hover:bg-crimson-100/70'
-                    }"
-                  >
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
-                      <circle cx="6" cy="18" r="3"/>
-                      <circle cx="18" cy="16" r="3"/>
-                    </svg>
-                    <span>演出歌單（共 ${songs.length} 首）</span>
-                    ${ev.setlistHidden && isEditMode ? '<span class="px-1.5 py-0.2 rounded bg-amber-200 text-amber-950 text-[10px]">保密中</span>' : ''}
-                    <svg class="w-3.5 h-3.5 transition-transform ${isSetlistExpanded ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </button>
-
-                  ${isSetlistExpanded ? `
-                    <button
-                      type="button"
-                      data-action="copy-setlist"
-                      data-id="${escapeHtml(ev.id)}"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium text-warm-muted hover:text-crimson-700 hover:bg-warm-tint border border-warm-border cursor-pointer"
-                    >
-                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                      </svg>
-                      <span>複製歌單文字</span>
-                    </button>
-                  ` : ''}
-                </div>
-
-                ${isSetlistExpanded ? `
-                  <div class="mt-2.5 rounded-xl bg-warm-tint/90 border border-warm-border p-3 sm:p-3.5">
-                    <ol class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
-                      ${songs.map((song, sIdx) => {
-                        const isEncore = (song.note || '').toUpperCase().includes('ENCORE');
-                        return `
-                          <li class="flex items-center justify-between gap-2 py-1 border-b border-warm-border/50 last:border-b-0 sm:[&:nth-last-child(2)]:border-b-0 text-xs">
-                            <div class="flex items-center gap-2 min-w-0">
-                              <span class="font-display font-bold text-[11px] w-5 text-right shrink-0 ${isEncore ? 'text-amber-700' : 'text-crimson-700'}">
-                                ${String(sIdx + 1).padStart(2, '0')}
-                              </span>
-                              <span class="font-medium text-warm-text truncate">${escapeHtml(song.title)}</span>
-                            </div>
-                            ${song.note ? `
-                              <span class="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                                isEncore
-                                  ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                                  : 'bg-white text-warm-muted border border-warm-border'
-                              }">
-                                ${escapeHtml(song.note)}
-                              </span>
-                            ` : ''}
-                          </li>
-                        `;
-                      }).join('')}
-                    </ol>
-                  </div>
-                ` : ''}
-              </div>
-            `;
-          } else if (hasSongs && ev.setlistHidden && !isEditMode) {
-            setlistSectionHtml = `
-              <div class="pt-2 border-t border-warm-border/60 flex items-center gap-1.5 text-[11px] text-warm-subtle">
-                <svg class="w-3.5 h-3.5 text-crimson-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                <span>本場演出歌單將於演出後公開（共 ${songs.length} 首曲目）</span>
-              </div>
-            `;
-          }
-
           return `
-            <article class="animate-card bg-white border ${past ? 'border-warm-border/75 opacity-85' : 'border-warm-border hover:border-crimson-300'} rounded-2xl p-4 sm:p-5 transition-all shadow-2xs">
+            <article class="animate-card bg-white border border-warm-border rounded-2xl p-4 sm:p-5 shadow-2xs">
               <div class="flex flex-col md:flex-row md:items-start gap-4">
-                
-                <!-- Left Date Block -->
-                <div class="flex md:flex-col items-baseline md:items-center justify-between md:justify-center md:w-28 shrink-0 pb-3 md:pb-0 border-b md:border-b-0 md:border-r border-warm-border md:pr-4">
-                  <div class="flex items-baseline md:flex-col md:items-center gap-2 md:gap-0.5">
-                    <span class="text-xs font-medium text-warm-subtle">${escapeHtml(year)}</span>
-                    <span class="font-display text-xl sm:text-2xl font-bold tracking-tight ${past ? 'text-warm-muted' : 'text-crimson-700'}">${escapeHtml(monthDay)}</span>
-                    <span class="text-xs font-medium text-warm-muted">${escapeHtml(weekday)}</span>
-                  </div>
-                  <span class="inline-flex items-center px-2.5 py-0.5 md:mt-2 rounded-full text-[11px] font-medium border ${badgeClass}">
-                    ${escapeHtml(displayStatus)}
-                  </span>
+                <div class="flex md:flex-col items-baseline md:items-center justify-between md:w-28 shrink-0 pb-3 md:pb-0 border-b md:border-b-0 md:border-r border-warm-border md:pr-4">
+                  <span class="text-xs text-warm-subtle">${year}</span>
+                  <span class="font-display text-xl sm:text-2xl font-bold ${past ? 'text-warm-muted' : 'text-crimson-700'}">${monthDay}</span>
+                  <span class="text-xs text-warm-muted">${weekday}</span>
+                  <span class="px-2 py-0.5 rounded-full text-[11px] border bg-stone-50">${displayStatus}</span>
                 </div>
-
-                <!-- Middle Event Details -->
-                <div class="flex-1 min-w-0 space-y-2.5">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-crimson-50 text-crimson-800 border border-crimson-200/80">
-                      ${escapeHtml(ev.city || '未定')}
-                    </span>
-                    <h2 class="text-base sm:text-lg font-bold text-warm-text leading-snug">
-                      ${escapeHtml(ev.title)}
-                    </h2>
-                  </div>
-
-                  <!-- Venue & Time Meta -->
-                  <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm text-warm-muted">
-                    <a
-                      href="${mapUrl}"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="在 Google 地圖中開啟"
-                      class="inline-flex items-center gap-1.5 hover:text-crimson-700 transition-colors"
-                    >
-                      <svg class="w-4 h-4 text-crimson-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                      </svg>
-                      <span class="font-medium text-warm-text underline decoration-crimson-200 underline-offset-4 hover:decoration-crimson-600">${escapeHtml(ev.venue)}</span>
-                    </a>
-
-                    ${timeString ? `
-                      <div class="inline-flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-amber-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <circle cx="12" cy="12" r="10"/>
-                          <polyline points="12 6 12 12 16 14"/>
-                        </svg>
-                        <span>${timeString}</span>
-                      </div>
-                    ` : ''}
-
-                    ${ev.price ? `
-                      <div class="inline-flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-amber-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
-                          <path d="M13 5v2M13 17v2M13 11v2"/>
-                        </svg>
-                        <span>${escapeHtml(ev.price)}</span>
-                      </div>
-                    ` : ''}
-                  </div>
-
-                  <!-- Lineup -->
-                  ${lineupHtml ? `
-                    <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
-                      <span class="text-xs text-warm-subtle mr-0.5">演出陣容：</span>
-                      ${lineupHtml}
+                <div class="flex-1 min-w-0 space-y-2">
+                  <h2 class="text-base sm:text-lg font-bold text-warm-text">${escapeHtml(ev.title)}</h2>
+                  <p class="text-xs sm:text-sm text-warm-muted">📍 ${escapeHtml(ev.venue)} | ⏰ ${escapeHtml(ev.openTime)} OPEN</p>
+                  ${ev.lineup ? `<p class="text-xs text-warm-subtle">陣容：${ev.lineup.join('、')}</p>` : ''}
+                  
+                  ${canViewSetlist ? `
+                    <div class="pt-2 border-t border-warm-border/70">
+                      <button type="button" data-action="toggle-setlist" data-id="${ev.id}" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-crimson-50 text-crimson-800 border border-crimson-200 cursor-pointer">
+                        🎵 演出歌單（共 ${songs.length} 首） ${isSetlistExpanded ? '▲' : '▼'}
+                      </button>
+                      ${isSetlistExpanded ? `
+                        <ol class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 bg-warm-tint p-3 rounded-xl text-xs">
+                          ${songs.map((s, i) => `<li>${i+1}. ${escapeHtml(s.title)} ${s.note ? `(${s.note})` : ''}</li>`).join('')}
+                        </ol>
+                      ` : ''}
                     </div>
                   ` : ''}
-
-                  <!-- Notes -->
-                  ${ev.notes ? `
-                    <p class="text-xs text-warm-muted bg-warm-tint/80 rounded-lg px-3 py-2 border border-warm-border/70 leading-relaxed">
-                      ${escapeHtml(ev.notes)}
-                    </p>
+                </div>
+                <div class="flex items-center gap-2">
+                  ${isEditMode ? `
+                    <button type="button" data-action="edit" data-id="${ev.id}" class="px-3 py-1.5 rounded-lg border bg-white text-xs cursor-pointer">編輯</button>
+                    <button type="button" data-action="delete" data-id="${ev.id}" class="px-3 py-1.5 rounded-lg border border-crimson-200 bg-crimson-50 text-crimson-700 text-xs cursor-pointer">刪除</button>
                   ` : ''}
-
-                  <!-- Setlist Accordion -->
-                  ${setlistSectionHtml}
                 </div>
-
-                <!-- Right Actions (External Link + Edit Controls) -->
-                <div class="flex md:flex-col items-center md:items-end justify-between md:justify-start gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-warm-border shrink-0">
-                  ${ev.ticketUrl ? `
-                    <a
-                      href="${escapeHtml(ev.ticketUrl)}"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium ${
-                        past
-                          ? 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                          : 'bg-crimson-700 text-white hover:bg-crimson-800 shadow-xs shadow-crimson-900/15'
-                      } transition-colors"
-                    >
-                      <span>${past ? '活動回顧' : '購票 / 詳情'}</span>
-                      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </a>
-                  ` : `
-                    <span class="text-xs text-warm-subtle px-2 py-1">${past ? '演出已圓滿結束' : '現場 / 社群公告'}</span>
-                  `}
-
-                  <!-- Edit Controls -->
-                  <div class="flex items-center gap-1 ${isEditMode ? '' : 'opacity-75 hover:opacity-100'}">
-                    ${isEditMode ? `
-                      <button
-                        type="button"
-                        data-action="move-up"
-                        data-index="${realIndex}"
-                        ${realIndex === 0 ? 'disabled' : ''}
-                        title="上移"
-                        class="p-1.5 rounded-lg border border-warm-border bg-white text-warm-muted hover:text-crimson-700 disabled:opacity-30 cursor-pointer"
-                      >
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="18 15 12 9 6 15" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        data-action="move-down"
-                        data-index="${realIndex}"
-                        ${realIndex === appData.events.length - 1 ? 'disabled' : ''}
-                        title="下移"
-                        class="p-1.5 rounded-lg border border-warm-border bg-white text-warm-muted hover:text-crimson-700 disabled:opacity-30 cursor-pointer"
-                      >
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                      </button>
-                    ` : ''}
-
-                    <button
-                      type="button"
-                      data-action="edit"
-                      data-id="${escapeHtml(ev.id)}"
-                      title="編輯此場次與歌單"
-                      class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-warm-border bg-white text-xs font-medium text-warm-text hover:bg-crimson-50 hover:text-crimson-700 hover:border-crimson-200 transition-colors cursor-pointer"
-                    >
-                      <svg class="w-3.5 h-3.5 text-crimson-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      <span>編輯</span>
-                    </button>
-
-                    ${isEditMode ? `
-                      <button
-                        type="button"
-                        data-action="delete"
-                        data-id="${escapeHtml(ev.id)}"
-                        title="刪除此場次"
-                        class="p-1.5 rounded-lg border border-crimson-200 bg-crimson-50 text-crimson-700 hover:bg-crimson-100 transition-colors cursor-pointer"
-                      >
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="3 6 5 6 21 6"/>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        </svg>
-                      </button>
-                    ` : ''}
-                  </div>
-                </div>
-
               </div>
             </article>
           `;
         }).join('');
       }
 
-      function renderAll() {
-        renderHeaderAndStats();
-        renderCityFilters();
-        renderEvents();
-      }
-
       // Edit Mode Toggle
-      function setEditMode(enabled) {
-        isEditMode = enabled;
-        if (isEditMode) {
-          editBanner.classList.remove('hidden');
-          toggleEditModeBtn.classList.add('bg-crimson-50', 'border-crimson-300', 'text-crimson-800');
-          editModeLabel.textContent = '編輯中';
-        } else {
-          editBanner.classList.add('hidden');
-          toggleEditModeBtn.classList.remove('bg-crimson-50', 'border-crimson-300', 'text-crimson-800');
-          editModeLabel.textContent = '編輯模式';
-        }
-        renderEvents();
-      }
-
-      toggleEditModeBtn.addEventListener('click', () => setEditMode(!isEditMode));
-      document.getElementById('bannerCloseEditBtn').addEventListener('click', () => setEditMode(false));
-
-      // Time Filter Buttons
-      document.querySelectorAll('.time-filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          selectedTimeFilter = btn.dataset.timeFilter;
-          document.querySelectorAll('.time-filter-btn').forEach(b => {
-            b.classList.remove('bg-crimson-700', 'text-white');
-            b.classList.add('text-warm-muted');
-          });
-          btn.classList.add('bg-crimson-700', 'text-white');
-          btn.classList.remove('text-warm-muted');
-          renderEvents();
-        });
-      });
-
-      // Search Input
-      searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value;
-        clearSearchBtn.classList.toggle('hidden', !searchQuery);
+      toggleEditModeBtn.addEventListener('click', () => {
+        isEditMode = !isEditMode;
+        editBanner.classList.toggle('hidden', !isEditMode);
+        editModeLabel.textContent = isEditMode ? '編輯中' : '編輯模式';
         renderEvents();
       });
+      document.getElementById('bannerCloseEditBtn').addEventListener('click', () => { isEditMode = false; editBanner.classList.add('hidden'); renderEvents(); });
 
-      clearSearchBtn.addEventListener('click', () => {
-        searchQuery = '';
-        searchInput.value = '';
-        clearSearchBtn.classList.add('hidden');
-        renderEvents();
-      });
-
-      document.getElementById('resetFiltersBtn').addEventListener('click', () => {
-        selectedCity = '全部';
-        selectedTimeFilter = 'all';
-        searchQuery = '';
-        searchInput.value = '';
-        clearSearchBtn.classList.add('hidden');
-        document.querySelectorAll('.time-filter-btn').forEach(b => {
-          const isAll = b.dataset.timeFilter === 'all';
-          b.classList.toggle('bg-crimson-700', isAll);
-          b.classList.toggle('text-white', isAll);
-          b.classList.toggle('text-warm-muted', !isAll);
-        });
-        renderAll();
-      });
-
-      // Setlist Editor Helpers inside Event Modal
-      const setlistEditorRows = document.getElementById('setlistEditorRows');
-
-      function renderSetlistEditor() {
-        if (draftSetlist.length === 0) {
-          setlistEditorRows.innerHTML = `
-            <div class="text-xs text-warm-subtle bg-white/80 border border-dashed border-crimson-200 rounded-lg py-3 px-3 text-center">
-              尚未新增歌曲，點擊下方「新增一首歌曲」或「快速貼上多行歌單」建立曲目表。
-            </div>
-          `;
-          return;
-        }
-
-        setlistEditorRows.innerHTML = draftSetlist.map((song, idx) => `
-          <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-lg border border-warm-border">
-            <span class="font-display font-bold text-xs text-crimson-700 w-6 text-center shrink-0">
-              ${String(idx + 1).padStart(2, '0')}
-            </span>
-            <input
-              type="text"
-              data-song-idx="${idx}"
-              data-song-field="title"
-              value="${escapeHtml(song.title)}"
-              placeholder="歌曲名稱"
-              class="song-input flex-1 min-w-0 px-2.5 py-1 rounded border border-warm-border/80 text-xs focus:outline-none focus:border-crimson-600"
-            />
-            <input
-              type="text"
-              data-song-idx="${idx}"
-              data-song-field="note"
-              value="${escapeHtml(song.note)}"
-              placeholder="備註 (如 ENCORE / Acoustic)"
-              class="song-input w-32 sm:w-40 px-2.5 py-1 rounded border border-warm-border/80 text-xs focus:outline-none focus:border-crimson-600"
-            />
-            <div class="flex items-center gap-0.5 shrink-0">
-              <button
-                type="button"
-                data-song-action="up"
-                data-song-idx="${idx}"
-                ${idx === 0 ? 'disabled' : ''}
-                title="上移"
-                class="p-1 rounded text-warm-muted hover:text-crimson-700 disabled:opacity-25 cursor-pointer"
-              >
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="18 15 12 9 6 15" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button
-                type="button"
-                data-song-action="down"
-                data-song-idx="${idx}"
-                ${idx === draftSetlist.length - 1 ? 'disabled' : ''}
-                title="下移"
-                class="p-1 rounded text-warm-muted hover:text-crimson-700 disabled:opacity-25 cursor-pointer"
-              >
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button
-                type="button"
-                data-song-action="remove"
-                data-song-idx="${idx}"
-                title="移除曲目"
-                class="p-1 rounded text-crimson-600 hover:bg-crimson-50 cursor-pointer"
-              >
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      setlistEditorRows.addEventListener('input', (e) => {
-        const input = e.target.closest('.song-input');
-        if (!input) return;
-        const idx = Number(input.dataset.songIdx);
-        const field = input.dataset.songField;
-        if (draftSetlist[idx]) {
-          draftSetlist[idx][field] = input.value;
-        }
-      });
-
-      setlistEditorRows.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-song-action]');
-        if (!btn) return;
-        const idx = Number(btn.dataset.songIdx);
-        const action = btn.dataset.songAction;
-        if (action === 'up' && idx > 0) {
-          const temp = draftSetlist[idx - 1];
-          draftSetlist[idx - 1] = draftSetlist[idx];
-          draftSetlist[idx] = temp;
-          renderSetlistEditor();
-        } else if (action === 'down' && idx < draftSetlist.length - 1) {
-          const temp = draftSetlist[idx + 1];
-          draftSetlist[idx + 1] = draftSetlist[idx];
-          draftSetlist[idx] = temp;
-          renderSetlistEditor();
-        } else if (action === 'remove') {
-          draftSetlist.splice(idx, 1);
-          renderSetlistEditor();
-        }
-      });
-
-      document.getElementById('addSongRowBtn').addEventListener('click', () => {
-        draftSetlist.push({ title: '', note: '' });
-        renderSetlistEditor();
-        const inputs = setlistEditorRows.querySelectorAll('input[data-song-field="title"]');
-        if (inputs.length) inputs[inputs.length - 1].focus();
-      });
-
-      // Bulk Paste Setlist
-      const bulkPasteBox = document.getElementById('bulkPasteBox');
-      const bulkPasteTextarea = document.getElementById('bulkPasteTextarea');
-
-      document.getElementById('toggleBulkPasteBtn').addEventListener('click', () => {
-        bulkPasteBox.classList.toggle('hidden');
-        if (!bulkPasteBox.classList.contains('hidden')) {
-          bulkPasteTextarea.focus();
-        }
-      });
-
-      document.getElementById('cancelBulkPasteBtn').addEventListener('click', () => {
-        bulkPasteBox.classList.add('hidden');
-        bulkPasteTextarea.value = '';
-      });
-
-      document.getElementById('applyBulkPasteBtn').addEventListener('click', () => {
-        const lines = bulkPasteTextarea.value
-          .split('\n')
-          .map(l => l.trim())
-          .filter(Boolean);
-        if (lines.length === 0) {
-          bulkPasteBox.classList.add('hidden');
-          return;
-        }
-        lines.forEach(line => {
-          // Strip leading numbering like "1. " or "01 - "
-          let cleaned = line.replace(/^\d+[\.\-\)、\s]+\s*/, '');
-          let note = '';
-          const bracketMatch = cleaned.match(/[\[\(（]([^\]\)）]+)[\]\)）]\s*$/);
-          if (bracketMatch) {
-            note = bracketMatch[1].trim();
-            cleaned = cleaned.replace(bracketMatch[0], '').trim();
-          }
-          if (cleaned) {
-            draftSetlist.push({ title: cleaned, note });
-          }
-        });
-        bulkPasteTextarea.value = '';
-        bulkPasteBox.classList.add('hidden');
-        renderSetlistEditor();
-        showToast(`已匯入 ${lines.length} 首曲目`);
-      });
-
-      // Event Modal Logic
+      // Modal Handling
       const eventModal = document.getElementById('eventModal');
       const eventForm = document.getElementById('eventForm');
-      const eventModalTitle = document.getElementById('eventModalTitle');
+      let draftSetlist = [];
 
-      function openEventModal(ev = null) {
-        bulkPasteBox.classList.add('hidden');
-        bulkPasteTextarea.value = '';
-
+      function openModal(ev = null) {
         if (ev) {
-          eventModalTitle.textContent = '編輯演出資訊與歌單';
           document.getElementById('fieldId').value = ev.id;
           document.getElementById('fieldTitle').value = ev.title || '';
           document.getElementById('fieldStatus').value = ev.status || '售票中';
@@ -1443,41 +527,38 @@
           document.getElementById('fieldTicketUrl').value = ev.ticketUrl || '';
           document.getElementById('fieldNotes').value = ev.notes || '';
           document.getElementById('fieldSetlistHidden').checked = Boolean(ev.setlistHidden);
-          draftSetlist = (ev.setlist || []).map(s => ({ title: s.title, note: s.note }));
+          draftSetlist = (ev.setlist || []).map(s => ({ ...s }));
         } else {
-          eventModalTitle.textContent = '新增演出資訊';
           eventForm.reset();
           document.getElementById('fieldId').value = '';
           document.getElementById('fieldDate').value = getTodayStr();
-          document.getElementById('fieldLineup').value = 'MOREBEUS';
-          document.getElementById('fieldSetlistHidden').checked = false;
           draftSetlist = [];
         }
         renderSetlistEditor();
         eventModal.classList.remove('hidden');
       }
 
-      function closeEventModal() {
-        eventModal.classList.add('hidden');
+      function renderSetlistEditor() {
+        const rows = document.getElementById('setlistEditorRows');
+        rows.innerHTML = draftSetlist.map((s, i) => `
+          <div class="flex gap-2">
+            <input type="text" value="${escapeHtml(s.title)}" placeholder="曲名" oninput="window.__updateSong(${i}, 'title', this.value)" class="flex-1 px-2 py-1 text-xs border rounded" />
+            <input type="text" value="${escapeHtml(s.note)}" placeholder="備註" oninput="window.__updateSong(${i}, 'note', this.value)" class="w-24 px-2 py-1 text-xs border rounded" />
+            <button type="button" onclick="window.__removeSong(${i})" class="text-crimson-600 text-xs px-2">刪除</button>
+          </div>
+        `).join('') || '<div class="text-xs text-warm-muted">尚無曲目</div>';
       }
+      window.__updateSong = (i, f, v) => { draftSetlist[i][f] = v; };
+      window.__removeSong = (i) => { draftSetlist.splice(i, 1); renderSetlistEditor(); };
 
-      document.getElementById('openAddModalBtn').addEventListener('click', () => openEventModal(null));
-      document.getElementById('closeEventModalBtn').addEventListener('click', closeEventModal);
-      document.getElementById('cancelEventModalBtn').addEventListener('click', closeEventModal);
+      document.getElementById('addSongRowBtn').addEventListener('click', () => { draftSetlist.push({ title: '', note: '' }); renderSetlistEditor(); });
+      document.getElementById('openAddModalBtn').addEventListener('click', () => openModal(null));
+      document.getElementById('closeEventModalBtn').addEventListener('click', () => eventModal.classList.add('hidden'));
+      document.getElementById('cancelEventModalBtn').addEventListener('click', () => eventModal.classList.add('hidden'));
 
-      eventForm.addEventListener('submit', (e) => {
+      eventForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('fieldId').value;
-        const lineupRaw = document.getElementById('fieldLineup').value;
-        const lineup = lineupRaw
-          .split(/[,，、]/)
-          .map(s => s.trim())
-          .filter(Boolean);
-
-        const cleanSetlist = draftSetlist
-          .map(s => ({ title: (s.title || '').trim(), note: (s.note || '').trim() }))
-          .filter(s => s.title !== '');
-
         const payload = {
           id: id || `evt-${Date.now()}`,
           title: document.getElementById('fieldTitle').value.trim(),
@@ -1488,218 +569,79 @@
           city: document.getElementById('fieldCity').value.trim(),
           venue: document.getElementById('fieldVenue').value.trim(),
           address: document.getElementById('fieldAddress').value.trim(),
-          lineup,
+          lineup: document.getElementById('fieldLineup').value.split(/[,，、]/).map(s => s.trim()).filter(Boolean),
           price: document.getElementById('fieldPrice').value.trim(),
           ticketUrl: document.getElementById('fieldTicketUrl').value.trim(),
           notes: document.getElementById('fieldNotes').value.trim(),
           setlistHidden: document.getElementById('fieldSetlistHidden').checked,
-          setlist: cleanSetlist
+          setlist: draftSetlist.filter(s => s.title.trim())
         };
 
         if (id) {
           const idx = appData.events.findIndex(item => item.id === id);
-          if (idx !== -1) {
-            appData.events[idx] = payload;
-          }
-          showToast('已更新演出資訊與歌單');
+          if (idx !== -1) appData.events[idx] = payload;
         } else {
           appData.events.unshift(payload);
-          showToast('已新增演出資訊');
         }
 
-        if (cleanSetlist.length > 0 && !payload.setlistHidden) {
-          expandedSetlistIds.add(payload.id);
-        }
-
-        saveState(true);
-        closeEventModal();
-        renderAll();
+        eventModal.classList.add('hidden');
+        await saveToCloud();
       });
 
-      // Card Actions Delegation
-      eventListContainer.addEventListener('click', (e) => {
+      eventListContainer.addEventListener('click', async (e) => {
         const btn = e.target.closest('[data-action]');
         if (!btn) return;
         const action = btn.dataset.action;
+        const id = btn.dataset.id;
 
         if (action === 'toggle-setlist') {
-          const id = btn.dataset.id;
-          if (expandedSetlistIds.has(id)) {
-            expandedSetlistIds.delete(id);
-          } else {
-            expandedSetlistIds.add(id);
-          }
+          if (expandedSetlistIds.has(id)) expandedSetlistIds.delete(id);
+          else expandedSetlistIds.add(id);
           renderEvents();
-        } else if (action === 'copy-setlist') {
-          const ev = appData.events.find(item => item.id === btn.dataset.id);
-          if (ev && ev.setlist && ev.setlist.length) {
-            const text = [
-              `【${ev.title}】演出歌單 (${ev.date})`,
-              ...ev.setlist.map((s, i) => `${i + 1}. ${s.title}${s.note ? ` (${s.note})` : ''}`)
-            ].join('\n');
-            navigator.clipboard?.writeText(text).then(() => {
-              showToast('已複製歌單至剪貼簿');
-            }).catch(() => {
-              showToast('複製失敗，請手動選取文字');
-            });
-          }
         } else if (action === 'edit') {
-          const ev = appData.events.find(item => item.id === btn.dataset.id);
-          if (ev) openEventModal(ev);
+          const ev = appData.events.find(item => item.id === id);
+          if (ev) openModal(ev);
         } else if (action === 'delete') {
-          const ev = appData.events.find(item => item.id === btn.dataset.id);
-          if (ev && confirm(`確定要刪除「${ev.title}」嗎？`)) {
-            appData.events = appData.events.filter(item => item.id !== ev.id);
-            saveState(true);
-            renderAll();
-            showToast('已刪除該演出場次');
-          }
-        } else if (action === 'move-up') {
-          const idx = Number(btn.dataset.index);
-          if (idx > 0) {
-            const temp = appData.events[idx - 1];
-            appData.events[idx - 1] = appData.events[idx];
-            appData.events[idx] = temp;
-            saveState(true);
-            renderEvents();
-          }
-        } else if (action === 'move-down') {
-          const idx = Number(btn.dataset.index);
-          if (idx < appData.events.length - 1) {
-            const temp = appData.events[idx + 1];
-            appData.events[idx + 1] = appData.events[idx];
-            appData.events[idx] = temp;
-            saveState(true);
-            renderEvents();
+          if (confirm('確定要刪除此場次嗎？')) {
+            appData.events = appData.events.filter(item => item.id !== id);
+            await saveToCloud();
           }
         }
       });
 
-      // More Menu Dropdown
-      const moreMenuBtn = document.getElementById('moreMenuBtn');
-      const moreMenuDropdown = document.getElementById('moreMenuDropdown');
-
-      moreMenuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        moreMenuDropdown.classList.toggle('hidden');
+      // Search & Filters
+      searchInput.addEventListener('input', (e) => { searchQuery = e.target.value; clearSearchBtn.classList.toggle('hidden', !searchQuery); renderEvents(); });
+      clearSearchBtn.addEventListener('click', () => { searchQuery = ''; searchInput.value = ''; clearSearchBtn.classList.add('hidden'); renderEvents(); });
+      document.querySelectorAll('.time-filter-btn').forEach(b => {
+        b.addEventListener('click', () => {
+          selectedTimeFilter = b.dataset.timeFilter;
+          document.querySelectorAll('.time-filter-btn').forEach(btn => btn.classList.replace('bg-crimson-700', 'text-warm-muted') || btn.classList.remove('text-white'));
+          b.classList.add('bg-crimson-700', 'text-white');
+          b.classList.remove('text-warm-muted');
+          renderEvents();
+        });
       });
 
-      document.addEventListener('click', () => {
-        moreMenuDropdown.classList.add('hidden');
-      });
-
-      // Header Info Modal
+      // Header Edit Modal
       const headerModal = document.getElementById('headerModal');
-      const headerForm = document.getElementById('headerForm');
-
       document.getElementById('editHeaderInfoBtn').addEventListener('click', () => {
-        document.getElementById('headerTitleInput').value = appData.siteMeta.title || '';
-        document.getElementById('headerSubtitleInput').value = appData.siteMeta.subtitle || '';
-        document.getElementById('headerAnnouncementInput').value = appData.siteMeta.announcement || '';
+        document.getElementById('headerTitleInput').value = appData.siteMeta.title;
+        document.getElementById('headerAnnouncementInput').value = appData.siteMeta.announcement;
         headerModal.classList.remove('hidden');
       });
-
-      document.getElementById('closeHeaderModalBtn').addEventListener('click', () => headerModal.classList.add('hidden'));
       document.getElementById('cancelHeaderModalBtn').addEventListener('click', () => headerModal.classList.add('hidden'));
-
-      headerForm.addEventListener('submit', (e) => {
+      document.getElementById('headerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        appData.siteMeta.title = document.getElementById('headerTitleInput').value.trim() || 'MOREBEUS';
-        appData.siteMeta.subtitle = document.getElementById('headerSubtitleInput').value.trim();
+        appData.siteMeta.title = document.getElementById('headerTitleInput').value.trim();
         appData.siteMeta.announcement = document.getElementById('headerAnnouncementInput').value.trim();
-        saveState(true);
         headerModal.classList.add('hidden');
-        renderHeaderAndStats();
-        showToast('已更新標題與公告');
+        await saveToCloud();
       });
 
-      // Export Updated Standalone HTML File
-      function downloadUpdatedHtml() {
-        const cloneDoc = document.documentElement.cloneNode(true);
-        const cloneScript = cloneDoc.querySelector('#default-data-script');
-        if (cloneScript) {
-          cloneScript.textContent = '\n  ' + JSON.stringify(appData, null, 2).replace(/<\/script>/gi, '<\\/script>') + '\n  ';
-        }
-        const cloneBanner = cloneDoc.querySelector('#editBanner');
-        if (cloneBanner) cloneBanner.classList.add('hidden');
-        const cloneDropdown = cloneDoc.querySelector('#moreMenuDropdown');
-        if (cloneDropdown) cloneDropdown.classList.add('hidden');
-        const cloneEventModal = cloneDoc.querySelector('#eventModal');
-        if (cloneEventModal) cloneEventModal.classList.add('hidden');
-        const cloneHeaderModal = cloneDoc.querySelector('#headerModal');
-        if (cloneHeaderModal) cloneHeaderModal.classList.add('hidden');
+      document.getElementById('forceSyncBtn').addEventListener('click', fetchFromCloud);
 
-        const htmlContent = '<!DOCTYPE html>\n' + cloneDoc.outerHTML;
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'index.html';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('已下載最新 index.html，可直接上傳至 GitHub');
-      }
-
-      document.getElementById('exportHtmlBtn').addEventListener('click', downloadUpdatedHtml);
-      document.getElementById('bannerExportHtmlBtn').addEventListener('click', downloadUpdatedHtml);
-
-      // Export JSON Backup
-      document.getElementById('exportJsonBtn').addEventListener('click', () => {
-        const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `morebeus-events-${getTodayStr()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('已匯出 JSON 備份檔');
-      });
-
-      // Import JSON Backup
-      document.getElementById('importJsonInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          try {
-            const imported = JSON.parse(evt.target.result);
-            if (imported && Array.isArray(imported.events)) {
-              appData = {
-                siteMeta: { ...appData.siteMeta, ...(imported.siteMeta || {}) },
-                events: imported.events.map(normalizeEvent)
-              };
-              saveState(true);
-              renderAll();
-              showToast('成功匯入演出資料與歌單');
-            } else {
-              alert('JSON 格式不正確，缺少 events 陣列。');
-            }
-          } catch (err) {
-            alert('讀取 JSON 檔案失敗，請確認檔案格式是否正確。');
-          }
-        };
-        reader.readAsText(file);
-        e.target.value = '';
-      });
-
-      // Reset to Default
-      document.getElementById('resetDefaultBtn').addEventListener('click', () => {
-        if (confirm('確定要清除目前瀏覽器的修改紀錄，並恢復為初始範例資料嗎？')) {
-          localStorage.removeItem(STORAGE_KEY);
-          appData = getEmbeddedDefaultData();
-          appData.events = (appData.events || []).map(normalizeEvent);
-          expandedSetlistIds.clear();
-          renderAll();
-          showToast('已重設為初始範例資料');
-        }
-      });
-
-      // Initial Render
-      renderAll();
+      // Initial fetch
+      fetchFromCloud();
     })();
   </script>
 </body>
