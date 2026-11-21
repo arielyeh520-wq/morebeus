@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOREBEUS 演出資訊總覽</title>
+  <title>MOREBEUS 演出資訊與周邊相簿</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -46,7 +46,7 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-card { animation: fadeSlide 0.24s ease-out both; }
+    .animate-page { animation: fadeSlide 0.22s ease-out both; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-crimson-100 selection:text-crimson-900">
@@ -54,6 +54,7 @@
   <!-- Top Navigation Bar -->
   <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-warm-border">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <!-- Brand -->
       <div class="flex items-center gap-3 min-w-0">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-crimson-700 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm shadow-crimson-900/15">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -67,10 +68,11 @@
               連線中...
             </span>
           </div>
-          <p id="siteSubtitleDisplay" class="text-xs text-warm-muted truncate">2026 Live Schedule &amp; Event Info</p>
+          <p id="siteSubtitleDisplay" class="text-xs text-warm-muted truncate">Live Schedule &amp; Merch Journal</p>
         </div>
       </div>
 
+      <!-- Right Toolbar -->
       <div class="flex items-center gap-2 shrink-0">
         <button
           id="toggleEditModeBtn"
@@ -85,43 +87,57 @@
         </button>
 
         <button
-          id="openAddModalBtn"
+          id="primaryAddBtn"
           type="button"
           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-crimson-700 text-white hover:bg-crimson-800 transition-colors shadow-sm shadow-crimson-900/15 cursor-pointer"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>新增演出</span>
+          <span id="primaryAddLabel">新增演出</span>
         </button>
 
         <div class="relative">
-          <button
-            id="moreMenuBtn"
-            type="button"
-            title="更多選項"
-            class="p-1.5 sm:p-2 rounded-lg border border-warm-border bg-white text-warm-muted hover:text-crimson-700 hover:bg-warm-tint transition-colors cursor-pointer"
-          >
+          <button id="moreMenuBtn" type="button" title="更多設定" class="p-1.5 sm:p-2 rounded-lg border border-warm-border bg-white text-warm-muted hover:text-crimson-700 hover:bg-warm-tint transition-colors cursor-pointer">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
             </svg>
           </button>
-          <div id="moreMenuDropdown" class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-white border border-warm-border shadow-lg shadow-stone-900/10 py-1.5 z-40 text-sm">
-            <button id="editHeaderInfoBtn" type="button" class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2.5 cursor-pointer">
-              <svg class="w-4 h-4 text-crimson-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7" stroke-linecap="round"/></svg>
-              <span>修改標題與公告列</span>
+          <div id="moreMenuDropdown" class="hidden absolute right-0 mt-2 w-52 rounded-xl bg-white border border-warm-border shadow-lg shadow-stone-900/10 py-1.5 z-40 text-sm">
+            <button id="editHeaderInfoBtn" type="button" class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2 cursor-pointer">
+              <span>修改標題與公告</span>
             </button>
-            <button id="forceSyncBtn" type="button" class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2.5 cursor-pointer">
-              <svg class="w-4 h-4 text-crimson-700 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.73-5.73" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>重新從雲端同步資料</span>
+            <button id="forceSyncBtn" type="button" class="w-full px-3.5 py-2 text-left text-warm-text hover:bg-warm-tint flex items-center gap-2 cursor-pointer">
+              <span>重新從雲端同步</span>
             </button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Two-Page Switcher Bar -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 border-t border-warm-border/60 bg-warm-tint/60">
+      <nav class="flex items-center gap-2 py-1.5" aria-label="頁面切換">
+        <button
+          id="tabEventsBtn"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-crimson-700 text-white shadow-2xs transition-all cursor-pointer"
+        >
+          <span>① 演出資訊</span>
+        </button>
+        <button
+          id="tabRetroBtn"
+          type="button"
+          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 transition-all cursor-pointer"
+        >
+          <span>② 周邊相簿分享 (Retro)</span>
+          <span id="merchCountPill" class="px-1.5 py-0.2 rounded-full text-[11px] bg-crimson-50 text-crimson-700 border border-crimson-200/70">0</span>
+        </button>
+      </nav>
+    </div>
   </header>
 
-  <!-- Diagnostic Error Alert Banner (Only shows when API fails) -->
+  <!-- Error Alert Banner -->
   <div id="errorAlertBanner" class="hidden bg-red-600 text-white">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm">
       <div>
@@ -134,90 +150,134 @@
     </div>
   </div>
 
-  <!-- Edit Mode Notice Banner -->
+  <!-- Edit Mode Banner -->
   <div id="editBanner" class="hidden bg-crimson-50 border-b border-crimson-200/80">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-crimson-900">
-      <div class="flex items-center gap-2">
-        <span class="inline-block w-2 h-2 rounded-full bg-crimson-600 animate-pulse"></span>
-        <span><strong>雲端編輯模式：</strong>修改或新增演出後點擊儲存，將直接同步至雲端，所有人重新整理即可看到！</span>
-      </div>
-      <button id="bannerCloseEditBtn" type="button" class="px-2.5 py-1 rounded-md bg-white border border-crimson-200 text-crimson-800 text-xs font-medium hover:bg-crimson-100 cursor-pointer">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-2 text-xs sm:text-sm text-crimson-900">
+      <span><strong>編輯模式已開啟：</strong>可調整順序、刪除場次或周邊系列，儲存後將即時同步至雲端。</span>
+      <button id="bannerCloseEditBtn" type="button" class="px-2.5 py-1 rounded-md bg-white border border-crimson-200 text-crimson-800 text-xs font-medium hover:bg-crimson-100 cursor-pointer shrink-0">
         完成編輯
       </button>
     </div>
   </div>
 
   <!-- Main Content -->
-  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
-    <!-- Announcement Bar -->
-    <section class="bg-white border border-warm-border rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
-      <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-crimson-700 to-amber-600"></div>
-      <div class="space-y-1 pl-2">
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-crimson-700 text-white tracking-wide">
-            公告 INFO
-          </span>
-          <span id="lastUpdatedLabel" class="text-xs text-warm-muted">最後更新：--</span>
+    <!-- ==================== PAGE 1: 演出資訊 ==================== -->
+    <div id="pageEvents" class="space-y-6 animate-page">
+      <!-- Announcement Bar -->
+      <section class="bg-white border border-warm-border rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-crimson-700 to-amber-600"></div>
+        <div class="space-y-1 pl-2">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-crimson-700 text-white tracking-wide">
+              公告 INFO
+            </span>
+            <span id="lastUpdatedLabel" class="text-xs text-warm-muted">最後更新：--</span>
+          </div>
+          <p id="announcementText" class="text-sm text-warm-text leading-relaxed">
+            正在從雲端讀取最新公告...
+          </p>
         </div>
-        <p id="announcementText" class="text-sm text-warm-text leading-relaxed">
-          正在從雲端讀取最新公告...
-        </p>
-      </div>
-      <div class="flex items-center gap-3 shrink-0 text-xs text-warm-muted border-t sm:border-t-0 pt-2.5 sm:pt-0 border-warm-border pl-2 sm:pl-0">
-        <div class="px-3 py-1.5 rounded-lg bg-warm-tint border border-warm-border/70">
-          <span>總場次</span><strong id="totalCountStat" class="ml-1.5 text-sm font-display text-warm-text">0</strong>
+        <div class="flex items-center gap-3 shrink-0 text-xs text-warm-muted border-t sm:border-t-0 pt-2.5 sm:pt-0 border-warm-border pl-2 sm:pl-0">
+          <div class="px-3 py-1.5 rounded-lg bg-warm-tint border border-warm-border/70">
+            <span>總場次</span><strong id="totalCountStat" class="ml-1.5 text-sm font-display text-warm-text">0</strong>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-crimson-50/70 border border-crimson-200/70">
+            <span class="text-crimson-800">即將演出</span><strong id="upcomingCountStat" class="ml-1.5 text-sm font-display text-crimson-700">0</strong>
+          </div>
         </div>
-        <div class="px-3 py-1.5 rounded-lg bg-crimson-50/70 border border-crimson-200/70">
-          <span class="text-crimson-800">即將演出</span><strong id="upcomingCountStat" class="ml-1.5 text-sm font-display text-crimson-700">0</strong>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Search & Filter Controls -->
-    <section class="space-y-3">
-      <div class="flex flex-col sm:flex-row gap-2.5">
-        <div class="relative flex-1">
-          <svg class="w-4 h-4 text-warm-subtle absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" stroke-linecap="round"/></svg>
-          <input id="searchInput" type="text" placeholder="搜尋活動名稱、場館、共演樂團或歌單曲目..." class="w-full pl-10 pr-9 py-2.5 rounded-xl bg-white border border-warm-border text-sm text-warm-text placeholder:text-warm-subtle focus:outline-none focus:border-crimson-600 focus:ring-2 focus:ring-crimson-100 transition-all" />
-          <button id="clearSearchBtn" type="button" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-warm-subtle hover:text-crimson-700 cursor-pointer">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
-          </button>
+      <!-- Search & Filter -->
+      <section class="space-y-3">
+        <div class="flex flex-col sm:flex-row gap-2.5">
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 text-warm-subtle absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" stroke-linecap="round"/></svg>
+            <input id="searchInput" type="text" placeholder="搜尋活動名稱、場館、共演樂團或歌單曲目..." class="w-full pl-10 pr-9 py-2.5 rounded-xl bg-white border border-warm-border text-sm text-warm-text placeholder:text-warm-subtle focus:outline-none focus:border-crimson-600 focus:ring-2 focus:ring-crimson-100 transition-all" />
+            <button id="clearSearchBtn" type="button" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-warm-subtle hover:text-crimson-700 cursor-pointer">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <div class="inline-flex rounded-xl bg-white border border-warm-border p-1 shrink-0 self-start sm:self-auto">
+            <button type="button" data-time-filter="all" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-crimson-700 text-white transition-colors cursor-pointer">全部場次</button>
+            <button type="button" data-time-filter="upcoming" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer">即將演出</button>
+            <button type="button" data-time-filter="past" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer">已結束</button>
+          </div>
         </div>
-        <div class="inline-flex rounded-xl bg-white border border-warm-border p-1 shrink-0 self-start sm:self-auto">
-          <button type="button" data-time-filter="all" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-crimson-700 text-white transition-colors cursor-pointer">全部場次</button>
-          <button type="button" data-time-filter="upcoming" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer">即將演出</button>
-          <button type="button" data-time-filter="past" class="time-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium text-warm-muted hover:text-warm-text transition-colors cursor-pointer">已結束</button>
+        <div id="cityFilterBar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
+      </section>
+
+      <!-- Event List -->
+      <section id="eventListContainer" class="space-y-3.5">
+        <div class="bg-white border border-warm-border rounded-2xl p-10 text-center text-warm-muted text-sm">
+          正在從雲端同步載入演出資訊...
         </div>
-      </div>
-      <div id="cityFilterBar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
-    </section>
+      </section>
 
-    <!-- Event List -->
-    <section id="eventListContainer" class="space-y-3.5">
-      <div class="bg-white border border-warm-border rounded-2xl p-10 text-center text-warm-muted text-sm">
-        正在從雲端同步載入演出資訊...
+      <!-- Event Empty State -->
+      <div id="eventEmptyState" class="hidden bg-white border border-warm-border rounded-2xl p-10 text-center space-y-2">
+        <h3 class="text-base font-semibold text-warm-text">找不到符合條件的演出場次</h3>
+        <p class="text-xs text-warm-muted">請嘗試調整篩選條件，或點擊右上角「新增演出」建立場次。</p>
       </div>
-    </section>
-
-    <!-- Empty State -->
-    <div id="emptyState" class="hidden bg-white border border-warm-border rounded-2xl p-10 text-center space-y-3">
-      <h3 class="text-base font-semibold text-warm-text">找不到符合條件的演出場次</h3>
-      <p class="text-xs text-warm-muted">請嘗試清除搜尋關鍵字，或點擊右上角「新增演出」建立場次。</p>
     </div>
+
+    <!-- ==================== PAGE 2: RETRO 分組周邊相簿 ==================== -->
+    <div id="pageRetro" class="hidden space-y-6 animate-page">
+      <!-- Retro Journal Header -->
+      <section class="bg-white border border-warm-border rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-rose-600 to-amber-500"></div>
+        <div class="space-y-1 pl-2">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-rose-700 text-white tracking-wide">
+              RETRO ROLL
+            </span>
+            <span class="text-xs text-warm-muted">周邊系列分組・多人共同上傳・底片相簿</span>
+          </div>
+          <p class="text-sm text-warm-text leading-relaxed">
+            按「1. 某某周邊、2. 某某周邊...」分類整理，每個項目可一次新增多張照片（× X）。大家都能上傳分享，所有人即時同步看得到！
+          </p>
+        </div>
+        <button
+          id="openMerchModalBtn"
+          type="button"
+          class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-crimson-700 text-white hover:bg-crimson-800 transition-colors shadow-xs shrink-0 cursor-pointer"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+          </svg>
+          <span>新增周邊系列</span>
+        </button>
+      </section>
+
+      <!-- Merch Category Pills -->
+      <div id="merchCategoryBar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
+
+      <!-- Numbered Merch Groups Container (1. XX周邊 + 多張照片, 2. XX周邊 + 多張照片...) -->
+      <section id="merchGroupsContainer" class="space-y-5">
+        <!-- Populated by JS -->
+      </section>
+
+      <!-- Merch Empty State -->
+      <div id="merchEmptyState" class="hidden bg-white border border-warm-border rounded-2xl p-10 text-center space-y-2">
+        <h3 class="text-base font-semibold text-warm-text">尚未建立任何周邊系列</h3>
+        <p class="text-xs text-warm-muted">點擊上方「新增周邊系列」，建立「1. 某某周邊」並上傳多張照片吧！</p>
+      </div>
+    </div>
+
   </main>
 
   <!-- Footer -->
   <footer class="border-t border-warm-border bg-white mt-12">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-warm-muted">
       <span class="font-display font-bold text-crimson-800">MOREBEUS</span>
-      <span>雲端即時同步演出資訊與歌單總覽</span>
+      <span>演出資訊 × Retro 周邊相簿即時同步</span>
     </div>
   </footer>
 
-  <!-- Add / Edit Event Modal -->
+  <!-- ==================== MODAL 1: ADD / EDIT EVENT ==================== -->
   <div id="eventModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full shadow-xl overflow-hidden my-auto animate-card">
+    <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full shadow-xl overflow-hidden my-auto animate-page">
       <div class="px-5 py-4 border-b border-warm-border bg-warm-tint/70 flex items-center justify-between">
         <h2 id="eventModalTitle" class="text-base font-bold text-warm-text">新增演出資訊</h2>
         <button type="button" id="closeEventModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 cursor-pointer">
@@ -252,7 +312,7 @@
           <div class="sm:col-span-2"><label class="block text-xs font-medium text-warm-text mb-1">演出場館 <span class="text-crimson-600">*</span></label><input id="fieldVenue" type="text" required placeholder="Legacy Taipei" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         </div>
         <div><label class="block text-xs font-medium text-warm-text mb-1">場館地址（選填）</label><input id="fieldAddress" type="text" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
-        <div><label class="block text-xs font-medium text-warm-text mb-1">演出陣容（請用逗號或頓號分隔）</label><input id="fieldLineup" type="text" placeholder="MOREBEUS、共演嘉賓" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
+        <div><label class="block text-xs font-medium text-warm-text mb-1">演出陣容（逗號或頓號分隔）</label><input id="fieldLineup" type="text" placeholder="MOREBEUS、共演嘉賓" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div><label class="block text-xs font-medium text-warm-text mb-1">票價資訊</label><input id="fieldPrice" type="text" placeholder="預售 $800 / 現場 $1,000" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
           <div><label class="block text-xs font-medium text-warm-text mb-1">購票 / 活動連結（選填）</label><input id="fieldTicketUrl" type="url" placeholder="https://..." class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" /></div>
@@ -266,7 +326,7 @@
               <p class="text-[11px] text-warm-muted">可新增曲目、標註備註或設為演出前保密</p>
             </div>
             <label class="inline-flex items-center gap-1.5 text-xs cursor-pointer bg-white px-2.5 py-1 rounded-lg border border-warm-border">
-              <input id="fieldSetlistHidden" type="checkbox" class="accent-crimson-700" /><span>演出前保密（僅編輯模式可見）</span>
+              <input id="fieldSetlistHidden" type="checkbox" class="accent-crimson-700" /><span>演出前保密</span>
             </label>
           </div>
           <div id="setlistEditorRows" class="space-y-2"></div>
@@ -292,7 +352,102 @@
     </div>
   </div>
 
-  <!-- Header Modal -->
+  <!-- ==================== MODAL 2: ADD / EDIT GROUPED MERCH + MULTI PHOTOS ==================== -->
+  <div id="merchModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full shadow-xl overflow-hidden my-auto animate-page">
+      <div class="px-5 py-4 border-b border-warm-border bg-warm-tint/70 flex items-center justify-between">
+        <h2 id="merchModalTitle" class="text-base font-bold text-warm-text">新增周邊系列與照片</h2>
+        <button type="button" id="closeMerchModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 cursor-pointer">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <form id="merchForm" class="p-5 space-y-4 max-h-[82vh] overflow-y-auto">
+        <input type="hidden" id="merchGroupId" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-warm-text mb-1">周邊系列名稱 <span class="text-crimson-600">*</span></label>
+            <input id="merchGroupTitle" type="text" required placeholder="例如：2026 冬季專場限定毛巾組" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-warm-text mb-1">分類</label>
+            <select id="merchGroupCategory" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm bg-white focus:outline-none focus:border-crimson-600">
+              <option value="服飾配件">服飾配件</option>
+              <option value="音樂載體">音樂載體</option>
+              <option value="現場拍立得">現場拍立得</option>
+              <option value="限定小物">限定小物</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-medium text-warm-text mb-1">價格 / 場次標籤（選填）</label>
+            <input id="merchGroupTag" type="text" placeholder="例如：NT$550・Legacy 專場" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-warm-text mb-1">紀錄日期</label>
+            <input id="merchGroupDate" type="date" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-warm-text mb-1">周邊介紹 / 故事（選填）</label>
+          <textarea id="merchGroupDesc" rows="2" placeholder="描述材質、尺寸或入手心得..." class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600"></textarea>
+        </div>
+
+        <!-- Multi-Photo Uploader & List -->
+        <div class="rounded-xl border border-crimson-200/80 bg-crimson-50/40 p-3.5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-xs font-bold text-warm-text">本系列照片（可新增多張照片 × X）</h3>
+              <p class="text-[11px] text-warm-muted">可一次多選手機/電腦照片自動壓縮，或手動貼上圖片網址</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-crimson-700 text-white text-xs font-medium hover:bg-crimson-800 cursor-pointer shadow-2xs">
+                <span>📷 多選上傳照片</span>
+                <input id="merchMultiFileInput" type="file" accept="image/*" multiple class="hidden" />
+              </label>
+              <button type="button" id="addPhotoUrlRowBtn" class="px-2.5 py-1.5 rounded-lg bg-white border border-crimson-200 text-xs font-medium text-crimson-700 hover:bg-crimson-50 cursor-pointer">
+                + 貼網址
+              </button>
+            </div>
+          </div>
+
+          <div id="merchPhotosEditorList" class="space-y-2.5">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-warm-border flex justify-end gap-2">
+          <button type="button" id="cancelMerchModalBtn" class="px-4 py-2 rounded-lg border border-warm-border text-sm text-warm-muted cursor-pointer">取消</button>
+          <button type="submit" id="submitMerchBtn" class="px-5 py-2 rounded-lg bg-crimson-700 text-white text-sm font-medium hover:bg-crimson-800 cursor-pointer">儲存並同步雲端</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: MULTI-PHOTO CAROUSEL LIGHTBOX ==================== -->
+  <div id="photoLightbox" class="hidden fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this)this.classList.add('hidden')">
+    <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-page">
+      <div class="bg-stone-950 flex items-center justify-center h-[52vh] sm:h-[58vh] overflow-hidden relative select-none">
+        <img id="lightboxImg" src="" alt="" class="max-h-full max-w-full object-contain" />
+        <button id="closeLightboxBtn" type="button" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 cursor-pointer">✕</button>
+        <button id="lightboxPrevBtn" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/55 text-white flex items-center justify-center hover:bg-black/80 cursor-pointer">‹</button>
+        <button id="lightboxNextBtn" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/55 text-white flex items-center justify-center hover:bg-black/80 cursor-pointer">›</button>
+        <span id="lightboxCounter" class="absolute bottom-3 right-3 px-2.5 py-0.5 rounded-full bg-black/65 text-white font-display text-xs">1 / 1</span>
+      </div>
+      <div class="p-4 sm:p-5 space-y-1.5 bg-[#FFFCF9]">
+        <div class="flex items-center justify-between gap-2">
+          <span id="lightboxGroupTitle" class="text-xs font-bold text-crimson-700"></span>
+          <span id="lightboxDate" class="font-display text-xs text-warm-subtle"></span>
+        </div>
+        <p id="lightboxPhotoCaption" class="text-sm font-medium text-warm-text leading-relaxed"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: HEADER SETTINGS ==================== -->
   <div id="headerModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white border border-warm-border rounded-2xl max-w-lg w-full shadow-xl p-5 space-y-4">
       <h2 class="text-base font-bold text-warm-text">修改標題與公告</h2>
@@ -322,46 +477,63 @@
     // 1. Bin ID：建立 Bin 後畫面上方或網址列的那串 24 碼英數字
     // 2. Master Key：API Keys 頁面最上方 $2a$10$... 開頭的密鑰
     // ========================================================
-    const JSONBIN_BIN_ID = "6afb1b9cac6210605a8c35c6";
-    const JSONBIN_API_KEY = "$2a$10$XgIv7VzSD9M.Y/QXcKjIDOL0wSzyp48VzBdM.D4.fuClOadKw2ssi";
+    const JSONBIN_BIN_ID = "6b01a9f3ffd5d16053d39527";
+    const JSONBIN_API_KEY = "$2a$10$LMnO3ycq2Ej2qLzRDoHP9.fO16G9UPYzdssk6atCAbTOc1ehluBC6";
     // ========================================================
 
     (function () {
       const BIN_ID = (JSONBIN_BIN_ID || "").trim();
       const API_KEY = (JSONBIN_API_KEY || "").trim();
       const WEEKDAYS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+      const MERCH_CATEGORIES = ['全部', '服飾配件', '音樂載體', '現場拍立得', '限定小物'];
 
       let appData = {
         siteMeta: {
           title: "MOREBEUS",
-          subtitle: "2026 Live Schedule & Event Info",
-          announcement: "歡迎查看 MOREBEUS 最新演出資訊與歌單。",
+          subtitle: "Live Schedule & Merch Journal",
+          announcement: "歡迎查看 MOREBEUS 最新演出資訊、歌單與周邊相簿。",
           lastUpdated: "--"
         },
-        events: []
+        events: [],
+        merchGroups: []
       };
 
+      let currentPage = 'events';
       let isEditMode = false;
       let selectedCity = '全部';
       let selectedTimeFilter = 'all';
+      let selectedMerchCategory = '全部';
       let searchQuery = '';
       let expandedSetlistIds = new Set();
       let draftSetlist = [];
+      let draftMerchPhotos = [];
+      let lightboxState = { groupId: null, index: 0 };
 
+      // DOM Refs
       const siteTitleDisplay = document.getElementById('siteTitleDisplay');
       const siteSubtitleDisplay = document.getElementById('siteSubtitleDisplay');
       const announcementText = document.getElementById('announcementText');
       const lastUpdatedLabel = document.getElementById('lastUpdatedLabel');
       const totalCountStat = document.getElementById('totalCountStat');
       const upcomingCountStat = document.getElementById('upcomingCountStat');
+      const merchCountPill = document.getElementById('merchCountPill');
       const cityFilterBar = document.getElementById('cityFilterBar');
+      const merchCategoryBar = document.getElementById('merchCategoryBar');
       const eventListContainer = document.getElementById('eventListContainer');
-      const emptyState = document.getElementById('emptyState');
+      const merchGroupsContainer = document.getElementById('merchGroupsContainer');
+      const eventEmptyState = document.getElementById('eventEmptyState');
+      const merchEmptyState = document.getElementById('merchEmptyState');
       const searchInput = document.getElementById('searchInput');
       const clearSearchBtn = document.getElementById('clearSearchBtn');
       const editBanner = document.getElementById('editBanner');
       const toggleEditModeBtn = document.getElementById('toggleEditModeBtn');
       const editModeLabel = document.getElementById('editModeLabel');
+      const primaryAddBtn = document.getElementById('primaryAddBtn');
+      const primaryAddLabel = document.getElementById('primaryAddLabel');
+      const tabEventsBtn = document.getElementById('tabEventsBtn');
+      const tabRetroBtn = document.getElementById('tabRetroBtn');
+      const pageEvents = document.getElementById('pageEvents');
+      const pageRetro = document.getElementById('pageRetro');
       const cloudStatusBadge = document.getElementById('cloudStatusBadge');
       const errorAlertBanner = document.getElementById('errorAlertBanner');
       const errorAlertDetail = document.getElementById('errorAlertDetail');
@@ -384,9 +556,21 @@
         errorAlertBanner.classList.remove('hidden');
       }
 
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMessage').textContent = msg;
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          toast.classList.remove('opacity-100', 'translate-y-0');
+        }, 2800);
+      }
+
       async function fetchFromCloud() {
         if (!BIN_ID || BIN_ID.includes("請貼上") || !API_KEY || API_KEY.includes("請貼上")) {
-          showDiagnosticError("尚未填入 JSONBIN_BIN_ID 或 JSONBIN_API_KEY，請開啟 index.html 檢查最下方的設定區。");
+          showDiagnosticError("尚未填入 JSONBIN_BIN_ID 或 JSONBIN_API_KEY，請檢查程式碼最下方的設定區。");
           eventListContainer.innerHTML = `<div class="bg-white border border-red-200 rounded-2xl p-8 text-center text-sm text-red-700">尚未設定 JSONBin 密鑰，請依上方紅色提示填入 Bin ID 與 Master Key。</div>`;
           return;
         }
@@ -400,14 +584,13 @@
               "X-Bin-Meta": "false"
             }
           });
-
           const rawText = await res.text();
           let json = null;
           try { json = JSON.parse(rawText); } catch (e) {}
 
           if (!res.ok) {
-            const reason = (json && json.message) ? json.message : `HTTP 狀態碼 ${res.status}`;
-            throw new Error(`讀取失敗 (${reason}) — 請確認 Bin ID 與 Master Key 是否完全正確。`);
+            const reason = (json && json.message) ? json.message : `HTTP ${res.status}`;
+            throw new Error(`讀取失敗 (${reason}) — 請確認 Bin ID 與 Master Key 是否正確。`);
           }
 
           const record = (json && json.record) ? json.record : json;
@@ -415,21 +598,19 @@
             appData = {
               siteMeta: {
                 title: (record.siteMeta && record.siteMeta.title) || "MOREBEUS",
-                subtitle: (record.siteMeta && record.siteMeta.subtitle) || "2026 Live Schedule & Event Info",
-                announcement: (record.siteMeta && record.siteMeta.announcement) || "歡迎查看 MOREBEUS 最新演出資訊。",
+                subtitle: (record.siteMeta && record.siteMeta.subtitle) || "Live Schedule & Merch Journal",
+                announcement: (record.siteMeta && record.siteMeta.announcement) || "歡迎查看 MOREBEUS 最新演出資訊與周邊相簿。",
                 lastUpdated: (record.siteMeta && record.siteMeta.lastUpdated) || "--"
               },
-              events: Array.isArray(record.events) ? record.events : []
+              events: Array.isArray(record.events) ? record.events : [],
+              merchGroups: Array.isArray(record.merchGroups) ? record.merchGroups : []
             };
             setCloudStatus('ok', '雲端已同步');
             renderAll();
-          } else {
-            throw new Error("雲端資料格式不正確，請確認 JSONBin 內貼上的是正確的 JSON 物件。");
           }
         } catch (err) {
-          console.error("雲端載入失敗:", err);
-          showDiagnosticError(err.message || "網路連線失敗，若您是直接雙擊開啟本機 HTML 檔，請先上傳至 GitHub Pages 再測試。");
-          eventListContainer.innerHTML = `<div class="bg-white border border-warm-border rounded-2xl p-8 text-center text-sm text-warm-muted">無法載入雲端資料，請查看上方紅色錯誤提示。</div>`;
+          console.error(err);
+          showDiagnosticError(err.message || "無法連線至雲端，請確認網路或是否已部署至 GitHub Pages。");
         }
       }
 
@@ -442,7 +623,7 @@
         const now = new Date();
         appData.siteMeta.lastUpdated = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
         setCloudStatus('loading', '儲存中...');
-        showToast("正在寫入雲端資料庫...");
+        showToast("正在同步至雲端...");
 
         try {
           const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
@@ -459,8 +640,8 @@
           try { json = JSON.parse(rawText); } catch (e) {}
 
           if (!res.ok) {
-            const reason = (json && json.message) ? json.message : `HTTP 狀態碼 ${res.status}`;
-            throw new Error(`寫入雲端失敗 (${reason}) — 請確認您貼上的是「Master Key」而非唯讀金鑰。`);
+            const reason = (json && json.message) ? json.message : `HTTP ${res.status}`;
+            throw new Error(`儲存失敗 (${reason}) — 若照片過多超過免費版 100KB 上限，建議改用圖片網址或減少單次上傳張數。`);
           }
 
           setCloudStatus('ok', '雲端已同步');
@@ -468,47 +649,57 @@
           renderAll();
           return true;
         } catch (err) {
-          console.error("寫入雲端失敗:", err);
-          showDiagnosticError(err.message || "寫入雲端失敗，請檢查網路連線。");
-          alert("儲存失敗：\n" + (err.message || "未知錯誤"));
+          console.error(err);
+          showDiagnosticError(err.message || "寫入雲端失敗。");
+          alert("同步失敗：\n" + (err.message || "未知錯誤"));
           return false;
         }
       }
 
-      function showToast(msg) {
-        const toast = document.getElementById('toast');
-        document.getElementById('toastMessage').textContent = msg;
-        toast.classList.remove('opacity-0', 'translate-y-2');
-        toast.classList.add('opacity-100', 'translate-y-0');
-        clearTimeout(window.__toastTimer);
-        window.__toastTimer = setTimeout(() => {
-          toast.classList.add('opacity-0', 'translate-y-2');
-          toast.classList.remove('opacity-100', 'translate-y-0');
-        }, 3000);
+      // Page Switcher
+      function switchPage(page) {
+        currentPage = page;
+        if (page === 'events') {
+          pageEvents.classList.remove('hidden');
+          pageRetro.classList.add('hidden');
+          tabEventsBtn.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-crimson-700 text-white shadow-2xs transition-all cursor-pointer';
+          tabRetroBtn.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 transition-all cursor-pointer';
+          primaryAddLabel.textContent = '新增演出';
+        } else {
+          pageEvents.classList.add('hidden');
+          pageRetro.classList.remove('hidden');
+          tabRetroBtn.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-crimson-700 text-white shadow-2xs transition-all cursor-pointer';
+          tabEventsBtn.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 transition-all cursor-pointer';
+          primaryAddLabel.textContent = '新增周邊';
+          renderMerchGroups();
+        }
       }
 
+      tabEventsBtn.addEventListener('click', () => switchPage('events'));
+      tabRetroBtn.addEventListener('click', () => switchPage('retro'));
+
+      primaryAddBtn.addEventListener('click', () => {
+        if (currentPage === 'events') openEventModal(null);
+        else openMerchModal(null);
+      });
+      document.getElementById('openMerchModalBtn').addEventListener('click', () => openMerchModal(null));
+
+      // Helpers
       function getTodayStr() {
         const d = new Date();
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       }
-
       function isEventPast(ev) {
         if (ev.status === '已結束') return true;
         if (!ev.date) return false;
         return ev.date < getTodayStr();
       }
-
       function formatDateParts(dateStr) {
         if (!dateStr) return { year: '----', monthDay: '--/--', weekday: '' };
         const [y, m, d] = dateStr.split('-').map(Number);
         const dt = new Date(y, (m || 1) - 1, d || 1);
-        return {
-          year: String(y),
-          monthDay: `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`,
-          weekday: WEEKDAYS[dt.getDay()] || ''
-        };
+        return { year: String(y), monthDay: `${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`, weekday: WEEKDAYS[dt.getDay()] || '' };
       }
-
       function getStatusBadgeClass(status, past) {
         if (past || status === '已結束') return 'bg-stone-100 text-stone-500 border-stone-200';
         switch (status) {
@@ -519,7 +710,6 @@
           default: return 'bg-stone-100 text-stone-700 border-stone-200';
         }
       }
-
       function escapeHtml(str) {
         if (!str) return '';
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -532,8 +722,10 @@
         lastUpdatedLabel.textContent = `最後更新：${appData.siteMeta.lastUpdated || '-'}`;
 
         const events = appData.events || [];
+        const groups = appData.merchGroups || [];
         totalCountStat.textContent = events.length;
         upcomingCountStat.textContent = events.filter(ev => !isEventPast(ev)).length;
+        merchCountPill.textContent = groups.length;
 
         const cities = ['全部'];
         events.forEach(ev => {
@@ -555,8 +747,10 @@
         });
 
         renderEvents();
+        renderMerchGroups();
       }
 
+      // Render Page 1: Events
       function renderEvents() {
         const q = searchQuery.trim().toLowerCase();
         const events = appData.events || [];
@@ -578,11 +772,10 @@
 
         if (filtered.length === 0) {
           eventListContainer.innerHTML = '';
-          emptyState.classList.remove('hidden');
+          eventEmptyState.classList.remove('hidden');
           return;
         }
-
-        emptyState.classList.add('hidden');
+        eventEmptyState.classList.add('hidden');
 
         eventListContainer.innerHTML = filtered.map(ev => {
           const past = isEventPast(ev);
@@ -610,7 +803,7 @@
           ].filter(Boolean).join(' / ');
 
           return `
-            <article class="animate-card bg-white border ${past ? 'border-warm-border/75 opacity-85' : 'border-warm-border hover:border-crimson-300'} rounded-2xl p-4 sm:p-5 shadow-2xs">
+            <article class="animate-page bg-white border ${past ? 'border-warm-border/75 opacity-85' : 'border-warm-border hover:border-crimson-300'} rounded-2xl p-4 sm:p-5 shadow-2xs">
               <div class="flex flex-col md:flex-row md:items-start gap-4">
                 <div class="flex md:flex-col items-baseline md:items-center justify-between md:w-28 shrink-0 pb-3 md:pb-0 border-b md:border-b-0 md:border-r border-warm-border md:pr-4">
                   <div class="flex items-baseline md:flex-col md:items-center gap-2 md:gap-0.5">
@@ -672,13 +865,131 @@
                     </a>
                   ` : ''}
                   <div class="flex items-center gap-1.5">
-                    <button type="button" data-action="edit" data-id="${escapeHtml(ev.id)}" class="px-2.5 py-1.5 rounded-lg border border-warm-border bg-white text-xs font-medium text-warm-text hover:bg-crimson-50 hover:text-crimson-700 cursor-pointer">編輯</button>
+                    <button type="button" data-action="edit-event" data-id="${escapeHtml(ev.id)}" class="px-2.5 py-1.5 rounded-lg border border-warm-border bg-white text-xs font-medium text-warm-text hover:bg-crimson-50 hover:text-crimson-700 cursor-pointer">編輯</button>
                     ${isEditMode ? `
-                      <button type="button" data-action="delete" data-id="${escapeHtml(ev.id)}" class="px-2.5 py-1.5 rounded-lg border border-crimson-200 bg-crimson-50 text-crimson-700 text-xs cursor-pointer">刪除</button>
+                      <button type="button" data-action="delete-event" data-id="${escapeHtml(ev.id)}" class="px-2.5 py-1.5 rounded-lg border border-crimson-200 bg-crimson-50 text-crimson-700 text-xs cursor-pointer">刪除</button>
                     ` : ''}
                   </div>
                 </div>
               </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      // Render Page 2: Numbered Merch Groups + Multi-Photos
+      function renderMerchGroups() {
+        const groups = appData.merchGroups || [];
+
+        merchCategoryBar.innerHTML = MERCH_CATEGORIES.map(cat => {
+          const active = cat === selectedMerchCategory;
+          const count = cat === '全部' ? groups.length : groups.filter(g => (g.category || '限定小物') === cat).length;
+          return `<button type="button" data-merch-cat="${escapeHtml(cat)}" class="merch-cat-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap cursor-pointer ${
+            active ? 'bg-crimson-700 text-white border-crimson-700' : 'bg-white text-warm-muted border-warm-border hover:border-crimson-300'
+          }">${escapeHtml(cat)} <span class="text-[11px] ${active ? 'text-crimson-100' : 'text-warm-subtle'}">${count}</span></button>`;
+        }).join('');
+
+        merchCategoryBar.querySelectorAll('.merch-cat-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            selectedMerchCategory = btn.dataset.merchCat;
+            renderMerchGroups();
+          });
+        });
+
+        const filtered = selectedMerchCategory === '全部'
+          ? groups
+          : groups.filter(g => (g.category || '限定小物') === selectedMerchCategory);
+
+        if (filtered.length === 0) {
+          merchGroupsContainer.innerHTML = '';
+          merchEmptyState.classList.remove('hidden');
+          return;
+        }
+        merchEmptyState.classList.add('hidden');
+
+        merchGroupsContainer.innerHTML = filtered.map((group, idx) => {
+          const photos = Array.isArray(group.photos) ? group.photos : [];
+          const numStr = String(idx + 1).padStart(2, '0');
+
+          return `
+            <article class="animate-page bg-[#FFFCF9] border border-warm-border rounded-2xl p-4 sm:p-5 shadow-2xs space-y-4">
+              <!-- Group Header: 1. XX周邊 (照片 × X) -->
+              <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-warm-border/70 pb-3.5">
+                <div class="space-y-1.5 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-display font-bold text-base sm:text-lg text-crimson-700">${numStr}.</span>
+                    <h2 class="text-base sm:text-lg font-bold text-warm-text">${escapeHtml(group.title)}</h2>
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-crimson-50 text-crimson-800 border border-crimson-200/80">
+                      ${escapeHtml(group.category || '限定小物')}
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-warm-tint text-warm-muted border border-warm-border">
+                      照片 × ${photos.length}
+                    </span>
+                  </div>
+
+                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-warm-muted">
+                    ${group.date ? `<span class="font-display">${escapeHtml(group.date)}</span>` : ''}
+                    ${group.tag ? `<span class="text-crimson-700 font-medium">${escapeHtml(group.tag)}</span>` : ''}
+                  </div>
+
+                  ${group.description ? `<p class="text-xs sm:text-sm text-warm-muted leading-relaxed">${escapeHtml(group.description)}</p>` : ''}
+                </div>
+
+                <!-- Group Actions -->
+                <div class="flex items-center gap-1.5 shrink-0 self-start">
+                  <button
+                    type="button"
+                    data-action="edit-merch-group"
+                    data-id="${escapeHtml(group.id)}"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-crimson-200 bg-crimson-50/70 text-xs font-medium text-crimson-800 hover:bg-crimson-100 cursor-pointer"
+                  >
+                    <span>+ 加照片 / 編輯</span>
+                  </button>
+                  ${isEditMode ? `
+                    <button
+                      type="button"
+                      data-action="delete-merch-group"
+                      data-id="${escapeHtml(group.id)}"
+                      class="px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs cursor-pointer"
+                    >
+                      刪除
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+
+              <!-- Multi-Photo Retro Grid -->
+              ${photos.length > 0 ? `
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  ${photos.map((photo, pIdx) => `
+                    <div
+                      data-action="open-lightbox"
+                      data-group-id="${escapeHtml(group.id)}"
+                      data-photo-idx="${pIdx}"
+                      class="group bg-white p-2 pb-2.5 rounded-xl border border-warm-border hover:border-crimson-300 shadow-2xs hover:shadow-md transition-all cursor-pointer flex flex-col"
+                    >
+                      <div class="aspect-square w-full rounded-lg overflow-hidden bg-stone-100 relative">
+                        <img
+                          src="${escapeHtml(photo.url)}"
+                          alt="${escapeHtml(photo.caption || group.title)}"
+                          loading="lazy"
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.2 rounded bg-black/55 text-white font-display text-[10px]">
+                          #${pIdx + 1}
+                        </span>
+                      </div>
+                      ${photo.caption ? `
+                        <p class="mt-2 text-[11px] text-warm-muted line-clamp-1 px-0.5">${escapeHtml(photo.caption)}</p>
+                      ` : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              ` : `
+                <div class="text-xs text-warm-subtle bg-warm-tint/70 border border-dashed border-warm-border rounded-xl py-6 text-center">
+                  此周邊系列尚未上傳照片，點擊右上角「+ 加照片 / 編輯」新增圖片！
+                </div>
+              `}
             </article>
           `;
         }).join('');
@@ -690,15 +1001,17 @@
         editBanner.classList.toggle('hidden', !isEditMode);
         editModeLabel.textContent = isEditMode ? '編輯中' : '編輯模式';
         renderEvents();
+        renderMerchGroups();
       });
       document.getElementById('bannerCloseEditBtn').addEventListener('click', () => {
         isEditMode = false;
         editBanner.classList.add('hidden');
         editModeLabel.textContent = '編輯模式';
         renderEvents();
+        renderMerchGroups();
       });
 
-      // Setlist Editor inside Modal
+      // Setlist Editor inside Event Modal
       const setlistEditorRows = document.getElementById('setlistEditorRows');
       function renderSetlistEditor() {
         if (!draftSetlist.length) {
@@ -740,12 +1053,12 @@
         renderSetlistEditor();
       });
 
-      // Modal Handling
+      // Event Modal
       const eventModal = document.getElementById('eventModal');
       const eventForm = document.getElementById('eventForm');
       const submitEventBtn = document.getElementById('submitEventBtn');
 
-      function openModal(ev = null) {
+      function openEventModal(ev = null) {
         bulkPasteBox.classList.add('hidden');
         if (ev) {
           document.getElementById('eventModalTitle').textContent = '編輯演出資訊與歌單';
@@ -776,7 +1089,6 @@
         eventModal.classList.remove('hidden');
       }
 
-      document.getElementById('openAddModalBtn').addEventListener('click', () => openModal(null));
       document.getElementById('closeEventModalBtn').addEventListener('click', () => eventModal.classList.add('hidden'));
       document.getElementById('cancelEventModalBtn').addEventListener('click', () => eventModal.classList.add('hidden'));
 
@@ -828,12 +1140,210 @@
           if (expandedSetlistIds.has(id)) expandedSetlistIds.delete(id);
           else expandedSetlistIds.add(id);
           renderEvents();
-        } else if (action === 'edit') {
+        } else if (action === 'edit-event') {
           const ev = (appData.events || []).find(item => item.id === id);
-          if (ev) openModal(ev);
-        } else if (action === 'delete') {
-          if (confirm('確定要刪除此場次嗎？（會同步從雲端刪除）')) {
+          if (ev) openEventModal(ev);
+        } else if (action === 'delete-event') {
+          if (confirm('確定要刪除此場次嗎？')) {
             appData.events = (appData.events || []).filter(item => item.id !== id);
+            await saveToCloud();
+          }
+        }
+      });
+
+      // Merch Group Multi-Photo Editor
+      const merchModal = document.getElementById('merchModal');
+      const merchForm = document.getElementById('merchForm');
+      const merchPhotosEditorList = document.getElementById('merchPhotosEditorList');
+
+      function renderMerchPhotosEditor() {
+        if (!draftMerchPhotos.length) {
+          merchPhotosEditorList.innerHTML = `<div class="text-xs text-warm-subtle bg-white/80 border border-dashed border-crimson-200 rounded-lg py-3 text-center">尚未新增照片，點擊上方「📷 多選上傳照片」或「+ 貼網址」</div>`;
+          return;
+        }
+
+        merchPhotosEditorList.innerHTML = draftMerchPhotos.map((p, idx) => `
+          <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-warm-border">
+            <div class="w-12 h-12 rounded-lg bg-stone-100 overflow-hidden shrink-0 border border-warm-border/60 flex items-center justify-center">
+              ${p.url ? `<img src="${escapeHtml(p.url)}" class="w-full h-full object-cover" />` : `<span class="text-[10px] text-warm-subtle">無預覽</span>`}
+            </div>
+            <div class="flex-1 min-w-0 space-y-1">
+              <input
+                type="text"
+                value="${escapeHtml(p.url)}"
+                placeholder="圖片網址 (https://...)"
+                oninput="window.__updMerchPhoto(${idx}, 'url', this.value)"
+                class="w-full px-2 py-1 text-xs border border-warm-border rounded"
+              />
+              <input
+                type="text"
+                value="${escapeHtml(p.caption)}"
+                placeholder="單張照片短語說明（選填，例如：正面實穿、背面印刷細節）"
+                oninput="window.__updMerchPhoto(${idx}, 'caption', this.value)"
+                class="w-full px-2 py-1 text-xs border border-warm-border rounded"
+              />
+            </div>
+            <button type="button" onclick="window.__delMerchPhoto(${idx})" class="p-1.5 text-crimson-600 hover:bg-crimson-50 rounded-lg text-xs shrink-0 cursor-pointer" title="移除這張照片">✕</button>
+          </div>
+        `).join('');
+      }
+
+      window.__updMerchPhoto = (idx, field, val) => {
+        if (draftMerchPhotos[idx]) {
+          draftMerchPhotos[idx][field] = val;
+          if (field === 'url') renderMerchPhotosEditor();
+        }
+      };
+      window.__delMerchPhoto = (idx) => {
+        draftMerchPhotos.splice(idx, 1);
+        renderMerchPhotosEditor();
+      };
+
+      document.getElementById('addPhotoUrlRowBtn').addEventListener('click', () => {
+        draftMerchPhotos.push({ url: '', caption: '' });
+        renderMerchPhotosEditor();
+      });
+
+      // Multi-file Image Compression Handler
+      function compressImageFile(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const maxDim = 560;
+              let w = img.width;
+              let h = img.height;
+              if (w > h && w > maxDim) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else if (h >= w && h > maxDim) {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              resolve(canvas.toDataURL('image/jpeg', 0.65));
+            };
+            img.src = evt.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      document.getElementById('merchMultiFileInput').addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        showToast(`正在處理 ${files.length} 張照片...`);
+        for (const f of files) {
+          const dataUrl = await compressImageFile(f);
+          draftMerchPhotos.push({ url: dataUrl, caption: '' });
+        }
+        renderMerchPhotosEditor();
+        showToast(`已加入 ${files.length} 張照片`);
+        e.target.value = '';
+      });
+
+      function openMerchModal(group = null) {
+        if (group) {
+          document.getElementById('merchModalTitle').textContent = '編輯周邊系列 / 新增照片';
+          document.getElementById('merchGroupId').value = group.id;
+          document.getElementById('merchGroupTitle').value = group.title || '';
+          document.getElementById('merchGroupCategory').value = group.category || '限定小物';
+          document.getElementById('merchGroupTag').value = group.tag || '';
+          document.getElementById('merchGroupDate').value = group.date || '';
+          document.getElementById('merchGroupDesc').value = group.description || '';
+          draftMerchPhotos = (group.photos || []).map(p => ({ url: p.url || '', caption: p.caption || '' }));
+        } else {
+          document.getElementById('merchModalTitle').textContent = '新增周邊系列與照片';
+          merchForm.reset();
+          document.getElementById('merchGroupId').value = '';
+          document.getElementById('merchGroupDate').value = getTodayStr();
+          draftMerchPhotos = [];
+        }
+        renderMerchPhotosEditor();
+        merchModal.classList.remove('hidden');
+      }
+
+      document.getElementById('closeMerchModalBtn').addEventListener('click', () => merchModal.classList.add('hidden'));
+      document.getElementById('cancelMerchModalBtn').addEventListener('click', () => merchModal.classList.add('hidden'));
+
+      merchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitMerchBtn');
+        btn.disabled = true;
+        btn.textContent = '同步中...';
+
+        const id = document.getElementById('merchGroupId').value;
+        const cleanPhotos = draftMerchPhotos
+          .map(p => ({ url: (p.url || '').trim(), caption: (p.caption || '').trim() }))
+          .filter(p => p.url !== '');
+
+        const payload = {
+          id: id || `merch-grp-${Date.now()}`,
+          title: document.getElementById('merchGroupTitle').value.trim(),
+          category: document.getElementById('merchGroupCategory').value,
+          tag: document.getElementById('merchGroupTag').value.trim(),
+          date: document.getElementById('merchGroupDate').value,
+          description: document.getElementById('merchGroupDesc').value.trim(),
+          photos: cleanPhotos
+        };
+
+        if (!Array.isArray(appData.merchGroups)) appData.merchGroups = [];
+        if (id) {
+          const idx = appData.merchGroups.findIndex(g => g.id === id);
+          if (idx !== -1) appData.merchGroups[idx] = payload;
+        } else {
+          appData.merchGroups.push(payload);
+        }
+
+        const ok = await saveToCloud();
+        btn.disabled = false;
+        btn.textContent = '儲存並同步雲端';
+        if (ok) merchModal.classList.add('hidden');
+      });
+
+      // Lightbox Carousel
+      const photoLightbox = document.getElementById('photoLightbox');
+      function updateLightboxView() {
+        const group = (appData.merchGroups || []).find(g => g.id === lightboxState.groupId);
+        if (!group || !group.photos || !group.photos.length) return;
+        const total = group.photos.length;
+        const idx = ((lightboxState.index % total) + total) % total;
+        lightboxState.index = idx;
+        const photo = group.photos[idx];
+
+        document.getElementById('lightboxImg').src = photo.url;
+        document.getElementById('lightboxGroupTitle').textContent = group.title;
+        document.getElementById('lightboxDate').textContent = group.date || '';
+        document.getElementById('lightboxPhotoCaption').textContent = photo.caption || group.description || '';
+        document.getElementById('lightboxCounter').textContent = `${idx + 1} / ${total}`;
+      }
+
+      document.getElementById('closeLightboxBtn').addEventListener('click', () => photoLightbox.classList.add('hidden'));
+      document.getElementById('lightboxPrevBtn').addEventListener('click', () => { lightboxState.index -= 1; updateLightboxView(); });
+      document.getElementById('lightboxNextBtn').addEventListener('click', () => { lightboxState.index += 1; updateLightboxView(); });
+
+      merchGroupsContainer.addEventListener('click', async (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+        const action = target.dataset.action;
+
+        if (action === 'open-lightbox') {
+          lightboxState.groupId = target.dataset.groupId;
+          lightboxState.index = Number(target.dataset.photoIdx || 0);
+          updateLightboxView();
+          photoLightbox.classList.remove('hidden');
+        } else if (action === 'edit-merch-group') {
+          const group = (appData.merchGroups || []).find(g => g.id === target.dataset.id);
+          if (group) openMerchModal(group);
+        } else if (action === 'delete-merch-group') {
+          const group = (appData.merchGroups || []).find(g => g.id === target.dataset.id);
+          if (group && confirm(`確定要刪除「${group.title}」整個周邊系列嗎？`)) {
+            appData.merchGroups = (appData.merchGroups || []).filter(g => g.id !== group.id);
             await saveToCloud();
           }
         }
@@ -864,7 +1374,7 @@
         });
       });
 
-      // More Menu & Header Edit
+      // Header Edit Modal
       const moreMenuBtn = document.getElementById('moreMenuBtn');
       const moreMenuDropdown = document.getElementById('moreMenuDropdown');
       moreMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); moreMenuDropdown.classList.toggle('hidden'); });
