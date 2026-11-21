@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOREBEUS 演出資訊與周邊相簿</title>
+  <title>MOREBEUS 演出資訊</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -47,6 +47,29 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     .animate-page { animation: fadeSlide 0.22s ease-out both; }
+
+    /* Gacha Machine Animations */
+    @keyframes gachaShake {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      20% { transform: rotate(-3deg) translateY(-3px); }
+      40% { transform: rotate(3deg) translateY(2px); }
+      60% { transform: rotate(-2.5deg) translateY(-2px); }
+      80% { transform: rotate(2.5deg) translateY(1px); }
+    }
+    .gacha-shaking { animation: gachaShake 0.45s ease-in-out infinite; }
+
+    @keyframes ballDrop {
+      0% { transform: translateY(-28px) scale(0.6) rotate(-40deg); opacity: 0; }
+      65% { transform: translateY(4px) scale(1.06) rotate(12deg); opacity: 1; }
+      100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+    }
+    .animate-ball-drop { animation: ballDrop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+    @keyframes knobSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .animate-knob-spin { animation: knobSpin 0.65s ease-in-out; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-crimson-100 selection:text-crimson-900">
@@ -68,7 +91,7 @@
               連線中...
             </span>
           </div>
-          <p id="siteSubtitleDisplay" class="text-xs text-warm-muted truncate">Live Schedule &amp; Merch Journal</p>
+          <p id="siteSubtitleDisplay" class="text-xs text-warm-muted truncate">Live Schedule &amp; Fan Archive</p>
         </div>
       </div>
 
@@ -115,23 +138,39 @@
       </div>
     </div>
 
-    <!-- Two-Page Switcher Bar -->
+    <!-- Four-Page Switcher Bar -->
     <div class="max-w-5xl mx-auto px-4 sm:px-6 border-t border-warm-border/60 bg-warm-tint/60">
-      <nav class="flex items-center gap-2 py-1.5" aria-label="頁面切換">
+      <nav class="flex items-center gap-1.5 sm:gap-2 py-1.5 overflow-x-auto no-scrollbar" aria-label="頁面切換">
         <button
           id="tabEventsBtn"
           type="button"
-          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-crimson-700 text-white shadow-2xs transition-all cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-crimson-700 text-white shadow-2xs whitespace-nowrap transition-all cursor-pointer"
         >
           <span>① 演出資訊</span>
         </button>
         <button
           id="tabRetroBtn"
           type="button"
-          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 transition-all cursor-pointer"
+          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 whitespace-nowrap transition-all cursor-pointer"
         >
-          <span>② 周邊相簿分享 (Retro)</span>
+          <span>② 周邊相簿分享</span>
           <span id="merchCountPill" class="px-1.5 py-0.2 rounded-full text-[11px] bg-crimson-50 text-crimson-700 border border-crimson-200/70">0</span>
+        </button>
+        <button
+          id="tabShowMediaBtn"
+          type="button"
+          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 whitespace-nowrap transition-all cursor-pointer"
+        >
+          <span>③ 場次照片/影片</span>
+          <span id="showSessionCountPill" class="px-1.5 py-0.2 rounded-full text-[11px] bg-crimson-50 text-crimson-700 border border-crimson-200/70">0</span>
+        </button>
+        <button
+          id="tabGachaBtn"
+          type="button"
+          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 whitespace-nowrap transition-all cursor-pointer"
+        >
+          <span>④ 迷因扭蛋機</span>
+          <span id="gachaCountPill" class="px-1.5 py-0.2 rounded-full text-[11px] bg-crimson-50 text-crimson-700 border border-crimson-200/70">0</span>
         </button>
       </nav>
     </div>
@@ -153,7 +192,7 @@
   <!-- Edit Mode Banner -->
   <div id="editBanner" class="hidden bg-crimson-50 border-b border-crimson-200/80">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-2 text-xs sm:text-sm text-crimson-900">
-      <span><strong>編輯模式已開啟：</strong>可調整順序、刪除場次或周邊系列，儲存後將即時同步至雲端。</span>
+      <span><strong>編輯模式已開啟：</strong>可刪除場次、周邊系列、個人相簿或扭蛋內容，儲存後即時同步至雲端。</span>
       <button id="bannerCloseEditBtn" type="button" class="px-2.5 py-1 rounded-md bg-white border border-crimson-200 text-crimson-800 text-xs font-medium hover:bg-crimson-100 cursor-pointer shrink-0">
         完成編輯
       </button>
@@ -165,7 +204,6 @@
 
     <!-- ==================== PAGE 1: 演出資訊 ==================== -->
     <div id="pageEvents" class="space-y-6 animate-page">
-      <!-- Announcement Bar -->
       <section class="bg-white border border-warm-border rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative overflow-hidden">
         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-crimson-700 to-amber-600"></div>
         <div class="space-y-1 pl-2">
@@ -189,7 +227,6 @@
         </div>
       </section>
 
-      <!-- Search & Filter -->
       <section class="space-y-3">
         <div class="flex flex-col sm:flex-row gap-2.5">
           <div class="relative flex-1">
@@ -208,23 +245,20 @@
         <div id="cityFilterBar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
       </section>
 
-      <!-- Event List -->
       <section id="eventListContainer" class="space-y-3.5">
         <div class="bg-white border border-warm-border rounded-2xl p-10 text-center text-warm-muted text-sm">
           正在從雲端同步載入演出資訊...
         </div>
       </section>
 
-      <!-- Event Empty State -->
       <div id="eventEmptyState" class="hidden bg-white border border-warm-border rounded-2xl p-10 text-center space-y-2">
         <h3 class="text-base font-semibold text-warm-text">找不到符合條件的演出場次</h3>
         <p class="text-xs text-warm-muted">請嘗試調整篩選條件，或點擊右上角「新增演出」建立場次。</p>
       </div>
     </div>
 
-    <!-- ==================== PAGE 2: RETRO 分組周邊相簿 ==================== -->
+    <!-- ==================== PAGE 2:周邊記事本 ==================== -->
     <div id="pageRetro" class="hidden space-y-6 animate-page">
-      <!-- Retro Journal Header -->
       <section class="bg-white border border-warm-border rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-rose-600 to-amber-500"></div>
         <div class="space-y-1 pl-2">
@@ -235,7 +269,7 @@
             <span class="text-xs text-warm-muted">周邊系列分組・多人共同上傳・底片相簿</span>
           </div>
           <p class="text-sm text-warm-text leading-relaxed">
-            按「1. 某某周邊、2. 某某周邊...」分類整理，每個項目可一次新增多張照片（× X）。大家都能上傳分享，所有人即時同步看得到！
+            按「01. 大懂懂周邊、02. 未知周邊...」分類整理，每個項目可一次新增多張照片。大家都能上傳分享，所有人即時同步看得到！
           </p>
         </div>
         <button
@@ -243,26 +277,210 @@
           type="button"
           class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-crimson-700 text-white hover:bg-crimson-800 transition-colors shadow-xs shrink-0 cursor-pointer"
         >
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
-          </svg>
-          <span>新增周邊系列</span>
+          <span>+ 新增周邊系列</span>
         </button>
       </section>
 
-      <!-- Merch Category Pills -->
       <div id="merchCategoryBar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
 
-      <!-- Numbered Merch Groups Container (1. XX周邊 + 多張照片, 2. XX周邊 + 多張照片...) -->
-      <section id="merchGroupsContainer" class="space-y-5">
-        <!-- Populated by JS -->
-      </section>
+      <section id="merchGroupsContainer" class="space-y-5"></section>
 
-      <!-- Merch Empty State -->
       <div id="merchEmptyState" class="hidden bg-white border border-warm-border rounded-2xl p-10 text-center space-y-2">
         <h3 class="text-base font-semibold text-warm-text">尚未建立任何周邊系列</h3>
-        <p class="text-xs text-warm-muted">點擊上方「新增周邊系列」，建立「1. 某某周邊」並上傳多張照片吧！</p>
+        <p class="text-xs text-warm-muted">點擊上方「新增周邊系列」，建立「01. 大懂懂周邊」並上傳多張照片吧！</p>
       </div>
+    </div>
+
+    <!-- ==================== PAGE 3: 場次照片/影片分享 ==================== -->
+    <div id="pageShowMedia" class="hidden space-y-6 animate-page">
+      <section class="bg-white border border-warm-border rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-crimson-800 to-rose-500"></div>
+        <div class="space-y-1 pl-2">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-crimson-800 text-white tracking-wide">
+              LIVE ARCHIVE
+            </span>
+            <span class="text-xs text-warm-muted">場次分類・每人獨立相簿・原檔下載</span>
+          </div>
+          <p class="text-sm text-warm-text leading-relaxed">
+            在每個演出場次下方，每個人都能建立<strong>自己的相簿（例如：A人的、B人的）</strong>，上傳多張照片或影片，大家都能直接下載收藏！
+          </p>
+        </div>
+        <button
+          id="openShowSessionModalBtn"
+          type="button"
+          class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-crimson-700 text-white hover:bg-crimson-800 transition-colors shadow-xs shrink-0 cursor-pointer"
+        >
+          <span>+ 新增場次相簿區</span>
+        </button>
+      </section>
+
+      <section id="showSessionsContainer" class="space-y-6"></section>
+
+      <div id="showSessionEmptyState" class="hidden bg-white border border-warm-border rounded-2xl p-10 text-center space-y-2">
+        <h3 class="text-base font-semibold text-warm-text">尚未建立任何場次影音區</h3>
+        <p class="text-xs text-warm-muted">點擊上方「新增場次相簿區」，建立第一個演出場次，讓大家在裡面開自己的相簿吧！</p>
+      </div>
+    </div>
+
+    <!-- ==================== PAGE 4: 迷因扭蛋機  ==================== -->
+    <div id="pageGacha" class="hidden space-y-6 animate-page relative pb-12">
+      <!-- Top Intro & Action -->
+      <section class="bg-white border border-stone-300 rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-crimson-700"></div>
+        <div class="space-y-1 pl-2">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-crimson-700 text-white tracking-wider">
+              MEME GACHA
+            </span>
+            <span class="text-xs text-stone-500">紅白灰經典扭蛋機・未知盲盒・雙面問答紙條</span>
+          </div>
+          <p class="text-sm text-stone-800 leading-relaxed">
+            每個人都可以往機台裡投遞<strong>梗圖照片、單句笑話或「問答紙條（正面問題／背面答案）」</strong>。在轉出之前誰都不知道裡面藏了什麼！
+          </p>
+        </div>
+        <button
+          id="openAddGachaBtn"
+          type="button"
+          class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-crimson-700 text-white hover:bg-crimson-800 transition-colors shadow-sm shrink-0 cursor-pointer"
+        >
+          <span>＋ 投遞新扭蛋</span>
+        </button>
+      </section>
+
+      <!-- Red-White-Gray Gacha Machine Stage -->
+      <section class="bg-gradient-to-b from-stone-100 to-stone-200/80 border border-stone-300 rounded-3xl p-6 sm:p-10 flex flex-col items-center justify-center relative overflow-hidden">
+        <!-- Decorative subtle grid -->
+        <div class="absolute inset-0 opacity-25 pointer-events-none" style="background-image: radial-gradient(#a8a29e 1px, transparent 1px); background-size: 16px 16px;"></div>
+
+        <!-- Gacha Machine Body (Red / White / Gray) -->
+        <div id="gachaMachineBody" class="relative w-72 sm:w-80 flex flex-col items-center select-none z-10">
+          <!-- Red Top Cap -->
+          <div class="w-64 sm:w-72 h-11 bg-gradient-to-b from-crimson-600 to-crimson-700 rounded-t-3xl border-2 border-stone-800 shadow-inner flex items-center justify-center">
+            <span class="px-3 py-0.5 rounded-full bg-white text-crimson-700 font-display font-bold text-xs tracking-widest border border-stone-800">
+              MOREBEUS GACHA
+            </span>
+          </div>
+
+          <!-- Clear Glass Dome with Red/White/Gray Capsules Inside -->
+          <div class="w-64 sm:w-72 h-52 bg-white/90 border-x-2 border-stone-800 relative overflow-hidden flex items-end justify-center p-4 shadow-inner">
+            <!-- Glass reflection -->
+            <div class="absolute top-3 left-4 w-3 h-28 bg-white/80 rounded-full -rotate-12 pointer-events-none z-20"></div>
+            <div class="absolute top-5 left-9 w-1.5 h-14 bg-white/60 rounded-full -rotate-12 pointer-events-none z-20"></div>
+
+            <!-- Remaining count pill -->
+            <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-stone-800 text-white font-display text-[11px] font-semibold z-20 shadow-xs">
+              機台內共 <span id="gachaPoolCountDisplay" class="text-crimson-300">0</span> 顆
+            </div>
+
+            <!-- Decorative Red / White / Gray Capsules piled up -->
+            <div id="gachaDomeCapsules" class="relative w-full h-36 flex flex-wrap items-end justify-center gap-1.5 content-end z-10">
+              <!-- Capsule 1: Red/White -->
+              <div class="w-12 h-12 rounded-full border-2 border-stone-800 overflow-hidden shadow-xs -rotate-12 flex flex-col">
+                <div class="h-1/2 bg-crimson-600 border-b border-stone-800"></div>
+                <div class="h-1/2 bg-white"></div>
+              </div>
+              <!-- Capsule 2: Gray/White -->
+              <div class="w-12 h-12 rounded-full border-2 border-stone-800 overflow-hidden shadow-xs rotate-24 flex flex-col">
+                <div class="h-1/2 bg-stone-400 border-b border-stone-800"></div>
+                <div class="h-1/2 bg-white"></div>
+              </div>
+              <!-- Capsule 3: Red/Gray -->
+              <div class="w-12 h-12 rounded-full border-2 border-stone-800 overflow-hidden shadow-xs -rotate-45 flex flex-col">
+                <div class="h-1/2 bg-crimson-700 border-b border-stone-800"></div>
+                <div class="h-1/2 bg-stone-200"></div>
+              </div>
+              <!-- Capsule 4: White/Red -->
+              <div class="w-12 h-12 rounded-full border-2 border-stone-800 overflow-hidden shadow-xs rotate-12 flex flex-col">
+                <div class="h-1/2 bg-white border-b border-stone-800"></div>
+                <div class="h-1/2 bg-crimson-600"></div>
+              </div>
+              <!-- Capsule 5: Gray/Red -->
+              <div class="w-12 h-12 rounded-full border-2 border-stone-800 overflow-hidden shadow-xs -rotate-6 flex flex-col">
+                <div class="h-1/2 bg-stone-500 border-b border-stone-800"></div>
+                <div class="h-1/2 bg-white"></div>
+              </div>
+              <!-- Capsule 6: Red/White -->
+              <div class="w-12 h-12 rounded-full border-2 border-stone-800 overflow-hidden shadow-xs rotate-45 flex flex-col">
+                <div class="h-1/2 bg-crimson-600 border-b border-stone-800"></div>
+                <div class="h-1/2 bg-stone-100"></div>
+              </div>
+              <!-- Capsule 7: White/Gray -->
+              <div class="w-12 h-12 rounded-full border-2 border-stone-800 overflow-hidden shadow-xs -rotate-24 flex flex-col">
+                <div class="h-1/2 bg-white border-b border-stone-800"></div>
+                <div class="h-1/2 bg-stone-400"></div>
+              </div>
+              <!-- Capsule 8: Red/White -->
+              <div class="w-12 h-12 rounded-full border-2 border-stone-800 overflow-hidden shadow-xs rotate-12 flex flex-col">
+                <div class="h-1/2 bg-crimson-700 border-b border-stone-800"></div>
+                <div class="h-1/2 bg-white"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- White & Red Middle Dispenser Base -->
+          <div class="w-68 sm:w-76 bg-white border-2 border-stone-800 rounded-2xl p-4 shadow-md flex flex-col items-center gap-3 relative">
+            <!-- Knob + Coin Slot Row -->
+            <div class="w-full flex items-center justify-around">
+              <!-- Coin Slot -->
+              <div class="flex flex-col items-center gap-1">
+                <div class="w-9 h-11 rounded-lg bg-stone-200 border-2 border-stone-700 flex items-center justify-center shadow-inner">
+                  <div class="w-1.5 h-6 bg-stone-800 rounded-full"></div>
+                </div>
+                <span class="text-[10px] font-bold text-stone-500">FREE PLAY</span>
+              </div>
+
+              <!-- Turn Knob -->
+              <button
+                id="spinGachaBtn"
+                type="button"
+                class="group relative w-20 h-20 rounded-full bg-gradient-to-b from-stone-100 to-stone-300 border-2 border-stone-800 shadow-md hover:scale-105 active:scale-95 transition-transform flex items-center justify-center cursor-pointer"
+                title="點擊轉動扭蛋機！"
+              >
+                <div id="gachaKnobHandle" class="w-16 h-5 bg-crimson-600 border-2 border-stone-800 rounded-full flex items-center justify-center shadow-xs">
+                  <div class="w-2 h-2 rounded-full bg-white"></div>
+                </div>
+              </button>
+
+              <!-- Prize Chute -->
+              <div class="flex flex-col items-center gap-1">
+                <div class="w-16 h-14 rounded-xl bg-stone-800 border-2 border-stone-900 flex items-center justify-center overflow-hidden relative shadow-inner">
+                  <div id="droppedCapsuleSlot" class="hidden animate-ball-drop w-10 h-10 rounded-full border-2 border-white overflow-hidden flex flex-col shadow-md">
+                    <div class="h-1/2 bg-crimson-600 border-b border-stone-900"></div>
+                    <div class="h-1/2 bg-white"></div>
+                  </div>
+                  <span id="chuteEmptyHint" class="text-[10px] text-stone-400">出口</span>
+                </div>
+                <span class="text-[10px] font-bold text-stone-500">取物口</span>
+              </div>
+            </div>
+
+            <!-- Big Action Button -->
+            <button
+              id="spinGachaBigBtn"
+              type="button"
+              class="w-full py-2.5 rounded-xl bg-crimson-700 hover:bg-crimson-800 active:translate-y-0.5 text-white font-bold text-sm tracking-wide border-2 border-stone-900 shadow-xs transition-all cursor-pointer"
+            >
+              🎲 轉一顆迷因扭蛋！
+            </button>
+          </div>
+
+          <!-- Gray Bottom Stand -->
+          <div class="w-60 sm:w-68 h-5 bg-stone-400 border-x-2 border-b-2 border-stone-800 rounded-b-xl"></div>
+        </div>
+
+        <!-- Bottom-Right Secret Drawer Button ("查看扭蛋內容") -->
+        <button
+          id="openGachaListBtn"
+          type="button"
+          class="mt-6 sm:mt-0 sm:absolute sm:bottom-4 sm:right-4 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/95 hover:bg-white text-stone-700 hover:text-crimson-700 border border-stone-300 shadow-xs text-xs font-medium transition-colors cursor-pointer z-20"
+        >
+          <svg class="w-3.5 h-3.5 text-crimson-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+          <span>查看扭蛋內容</span>
+        </button>
+      </section>
     </div>
 
   </main>
@@ -271,7 +489,7 @@
   <footer class="border-t border-warm-border bg-white mt-12">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-warm-muted">
       <span class="font-display font-bold text-crimson-800">MOREBEUS</span>
-      <span>演出資訊 × Retro 周邊相簿即時同步</span>
+      <span>演出資訊</span>
     </div>
   </footer>
 
@@ -280,9 +498,7 @@
     <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full shadow-xl overflow-hidden my-auto animate-page">
       <div class="px-5 py-4 border-b border-warm-border bg-warm-tint/70 flex items-center justify-between">
         <h2 id="eventModalTitle" class="text-base font-bold text-warm-text">新增演出資訊</h2>
-        <button type="button" id="closeEventModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 cursor-pointer">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
-        </button>
+        <button type="button" id="closeEventModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 cursor-pointer">✕</button>
       </div>
       <form id="eventForm" class="p-5 space-y-4 max-h-[82vh] overflow-y-auto">
         <input type="hidden" id="fieldId" />
@@ -335,7 +551,7 @@
             <button type="button" id="toggleBulkPasteBtn" class="text-xs text-warm-muted hover:text-crimson-700 underline cursor-pointer">快速貼上多行歌單</button>
           </div>
           <div id="bulkPasteBox" class="hidden space-y-2 pt-2 border-t border-crimson-200/60">
-            <textarea id="bulkPasteTextarea" rows="3" placeholder="每行輸入一首曲目，例如：&#10;莫比烏斯環&#10;夜行列車 (Acoustic)&#10;無名超人 [ENCORE]" class="w-full px-3 py-2 rounded-lg border border-warm-border bg-white text-xs"></textarea>
+            <textarea id="bulkPasteTextarea" rows="3" placeholder="每行輸入一首曲目" class="w-full px-3 py-2 rounded-lg border border-warm-border bg-white text-xs"></textarea>
             <div class="flex justify-end gap-2">
               <button type="button" id="cancelBulkPasteBtn" class="px-2.5 py-1 text-xs text-warm-muted cursor-pointer">取消</button>
               <button type="button" id="applyBulkPasteBtn" class="px-3 py-1 rounded-md bg-crimson-700 text-white text-xs cursor-pointer">匯入曲目</button>
@@ -352,18 +568,15 @@
     </div>
   </div>
 
-  <!-- ==================== MODAL 2: ADD / EDIT GROUPED MERCH + MULTI PHOTOS ==================== -->
+  <!-- ==================== MODAL 2: ADD / EDIT GROUPED MERCH ==================== -->
   <div id="merchModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full shadow-xl overflow-hidden my-auto animate-page">
       <div class="px-5 py-4 border-b border-warm-border bg-warm-tint/70 flex items-center justify-between">
         <h2 id="merchModalTitle" class="text-base font-bold text-warm-text">新增周邊系列與照片</h2>
-        <button type="button" id="closeMerchModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 cursor-pointer">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
-        </button>
+        <button type="button" id="closeMerchModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 cursor-pointer">✕</button>
       </div>
       <form id="merchForm" class="p-5 space-y-4 max-h-[82vh] overflow-y-auto">
         <input type="hidden" id="merchGroupId" />
-
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           <div class="sm:col-span-2">
             <label class="block text-xs font-medium text-warm-text mb-1">周邊系列名稱 <span class="text-crimson-600">*</span></label>
@@ -379,44 +592,24 @@
             </select>
           </div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div>
-            <label class="block text-xs font-medium text-warm-text mb-1">價格 / 場次標籤（選填）</label>
-            <input id="merchGroupTag" type="text" placeholder="例如：NT$550・Legacy 專場" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-warm-text mb-1">紀錄日期</label>
-            <input id="merchGroupDate" type="date" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
-          </div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">價格 / 場次標籤</label><input id="merchGroupTag" type="text" placeholder="NT$550・Legacy 專場" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm" /></div>
+          <div><label class="block text-xs font-medium text-warm-text mb-1">紀錄日期</label><input id="merchGroupDate" type="date" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm" /></div>
         </div>
+        <div><label class="block text-xs font-medium text-warm-text mb-1">周邊介紹</label><textarea id="merchGroupDesc" rows="2" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm"></textarea></div>
 
-        <div>
-          <label class="block text-xs font-medium text-warm-text mb-1">周邊介紹 / 故事（選填）</label>
-          <textarea id="merchGroupDesc" rows="2" placeholder="描述材質、尺寸或入手心得..." class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600"></textarea>
-        </div>
-
-        <!-- Multi-Photo Uploader & List -->
         <div class="rounded-xl border border-crimson-200/80 bg-crimson-50/40 p-3.5 space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h3 class="text-xs font-bold text-warm-text">本系列照片（可新增多張照片 × X）</h3>
-              <p class="text-[11px] text-warm-muted">可一次多選手機/電腦照片自動壓縮，或手動貼上圖片網址</p>
-            </div>
+            <h3 class="text-xs font-bold text-warm-text">本系列照片（可新增多張照片 × X）</h3>
             <div class="flex items-center gap-2">
-              <label class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-crimson-700 text-white text-xs font-medium hover:bg-crimson-800 cursor-pointer shadow-2xs">
+              <label class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-crimson-700 text-white text-xs font-medium hover:bg-crimson-800 cursor-pointer">
                 <span>📷 多選上傳照片</span>
                 <input id="merchMultiFileInput" type="file" accept="image/*" multiple class="hidden" />
               </label>
-              <button type="button" id="addPhotoUrlRowBtn" class="px-2.5 py-1.5 rounded-lg bg-white border border-crimson-200 text-xs font-medium text-crimson-700 hover:bg-crimson-50 cursor-pointer">
-                + 貼網址
-              </button>
+              <button type="button" id="addPhotoUrlRowBtn" class="px-2.5 py-1.5 rounded-lg bg-white border border-crimson-200 text-xs font-medium text-crimson-700 cursor-pointer">+ 貼網址</button>
             </div>
           </div>
-
-          <div id="merchPhotosEditorList" class="space-y-2.5">
-            <!-- Populated dynamically -->
-          </div>
+          <div id="merchPhotosEditorList" class="space-y-2.5"></div>
         </div>
 
         <div class="pt-2 border-t border-warm-border flex justify-end gap-2">
@@ -427,27 +620,231 @@
     </div>
   </div>
 
-  <!-- ==================== MODAL 3: MULTI-PHOTO CAROUSEL LIGHTBOX ==================== -->
-  <div id="photoLightbox" class="hidden fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this)this.classList.add('hidden')">
-    <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-page">
-      <div class="bg-stone-950 flex items-center justify-center h-[52vh] sm:h-[58vh] overflow-hidden relative select-none">
-        <img id="lightboxImg" src="" alt="" class="max-h-full max-w-full object-contain" />
-        <button id="closeLightboxBtn" type="button" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 cursor-pointer">✕</button>
-        <button id="lightboxPrevBtn" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/55 text-white flex items-center justify-center hover:bg-black/80 cursor-pointer">‹</button>
-        <button id="lightboxNextBtn" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/55 text-white flex items-center justify-center hover:bg-black/80 cursor-pointer">›</button>
-        <span id="lightboxCounter" class="absolute bottom-3 right-3 px-2.5 py-0.5 rounded-full bg-black/65 text-white font-display text-xs">1 / 1</span>
+  <!-- ==================== MODAL 3: ADD / EDIT SHOW SESSION ==================== -->
+  <div id="showSessionModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white border border-warm-border rounded-2xl max-w-lg w-full shadow-xl overflow-hidden animate-page">
+      <div class="px-5 py-4 border-b border-warm-border bg-warm-tint/70 flex items-center justify-between">
+        <h2 id="showSessionModalTitle" class="text-base font-bold text-warm-text">新增場次相簿區</h2>
+        <button type="button" id="closeShowSessionModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 cursor-pointer">✕</button>
       </div>
-      <div class="p-4 sm:p-5 space-y-1.5 bg-[#FFFCF9]">
-        <div class="flex items-center justify-between gap-2">
-          <span id="lightboxGroupTitle" class="text-xs font-bold text-crimson-700"></span>
-          <span id="lightboxDate" class="font-display text-xs text-warm-subtle"></span>
+      <form id="showSessionForm" class="p-5 space-y-4">
+        <input type="hidden" id="sessionId" />
+        <div>
+          <label class="block text-xs font-medium text-warm-text mb-1">場次名稱 <span class="text-crimson-600">*</span></label>
+          <input id="sessionTitle" type="text" required placeholder="例如：MOREBEUS 2026 冬季專場《無限迴圈之夜》" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
         </div>
-        <p id="lightboxPhotoCaption" class="text-sm font-medium text-warm-text leading-relaxed"></p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-medium text-warm-text mb-1">演出日期 <span class="text-crimson-600">*</span></label>
+            <input id="sessionDate" type="date" required class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-warm-text mb-1">場館 / 備註（選填）</label>
+            <input id="sessionVenue" type="text" placeholder="例如：Legacy Taipei" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
+          </div>
+        </div>
+        <div class="pt-2 border-t border-warm-border flex justify-end gap-2">
+          <button type="button" id="cancelShowSessionModalBtn" class="px-4 py-2 rounded-lg border border-warm-border text-sm text-warm-muted cursor-pointer">取消</button>
+          <button type="submit" id="submitShowSessionBtn" class="px-5 py-2 rounded-lg bg-crimson-700 text-white text-sm font-medium hover:bg-crimson-800 cursor-pointer">建立場次</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: ADD / EDIT USER ALBUM IN SESSION ==================== -->
+  <div id="userAlbumModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white border border-warm-border rounded-2xl max-w-2xl w-full shadow-xl overflow-hidden my-auto animate-page">
+      <div class="px-5 py-4 border-b border-warm-border bg-warm-tint/70 flex items-center justify-between">
+        <div>
+          <h2 id="userAlbumModalTitle" class="text-base font-bold text-warm-text">建立我的場次相簿</h2>
+          <p id="userAlbumSessionSubtitle" class="text-xs text-warm-muted mt-0.5"></p>
+        </div>
+        <button type="button" id="closeUserAlbumModalBtn" class="p-1.5 rounded-lg text-warm-muted hover:text-crimson-700 cursor-pointer">✕</button>
+      </div>
+      <form id="userAlbumForm" class="p-5 space-y-4 max-h-[82vh] overflow-y-auto">
+        <input type="hidden" id="albumTargetSessionId" />
+        <input type="hidden" id="albumId" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-medium text-warm-text mb-1">相簿建立者 / 暱稱 <span class="text-crimson-600">*</span></label>
+            <input id="albumOwnerName" type="text" required placeholder="例如：小宇、A人、阿凱..." class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-warm-text mb-1">相簿一句話備註（選填）</label>
+            <input id="albumNote" type="text" placeholder="例如：前排直拍＆謝幕大合照！" class="w-full px-3 py-2 rounded-lg border border-warm-border text-sm focus:outline-none focus:border-crimson-600" />
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-crimson-200/80 bg-crimson-50/40 p-3.5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-xs font-bold text-warm-text">相簿內的「照片 / 影片」清單</h3>
+              <p class="text-[11px] text-warm-muted">支援多選上傳照片，或貼上照片網址 / 影片連結（YouTube 或 .mp4 直連）</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <label class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-crimson-700 text-white text-xs font-medium hover:bg-crimson-800 cursor-pointer">
+                <span>📷 多選照片</span>
+                <input id="albumMultiPhotoInput" type="file" accept="image/*" multiple class="hidden" />
+              </label>
+              <button type="button" id="addAlbumPhotoUrlBtn" class="px-2.5 py-1.5 rounded-lg bg-white border border-crimson-200 text-xs font-medium text-crimson-700 cursor-pointer">+ 照片網址</button>
+              <button type="button" id="addAlbumVideoUrlBtn" class="px-2.5 py-1.5 rounded-lg bg-white border border-amber-300 text-xs font-medium text-amber-800 cursor-pointer">+ 影片連結</button>
+            </div>
+          </div>
+          <div id="albumMediaEditorList" class="space-y-2.5"></div>
+        </div>
+
+        <div class="pt-2 border-t border-warm-border flex justify-end gap-2">
+          <button type="button" id="cancelUserAlbumModalBtn" class="px-4 py-2 rounded-lg border border-warm-border text-sm text-warm-muted cursor-pointer">取消</button>
+          <button type="submit" id="submitUserAlbumBtn" class="px-5 py-2 rounded-lg bg-crimson-700 text-white text-sm font-medium hover:bg-crimson-800 cursor-pointer">儲存相簿至雲端</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 5: ADD GACHA CAPSULE (投遞新扭蛋) ==================== -->
+  <div id="addGachaModal" class="hidden fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white border-2 border-stone-800 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden my-auto animate-page">
+      <div class="px-5 py-4 border-b border-stone-200 bg-stone-100 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-crimson-600"></span>
+          <h2 class="text-base font-bold text-stone-900">投遞一顆神祕迷因扭蛋</h2>
+        </div>
+        <button type="button" id="closeAddGachaModalBtn" class="p-1.5 rounded-lg text-stone-500 hover:text-crimson-700 cursor-pointer">✕</button>
+      </div>
+
+      <form id="addGachaForm" class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-stone-700 mb-1.5">選擇扭蛋內容類型</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" data-gacha-type="qa" class="gacha-type-btn py-2 px-2 rounded-xl border-2 border-crimson-700 bg-crimson-50 text-crimson-800 text-xs font-bold cursor-pointer">
+              📄 問答紙條<br/><span class="text-[10px] font-normal text-stone-500">正面問／背面答</span>
+            </button>
+            <button type="button" data-gacha-type="joke" class="gacha-type-btn py-2 px-2 rounded-xl border border-stone-300 bg-white text-stone-600 text-xs font-bold cursor-pointer">
+              💬 單句笑話<br/><span class="text-[10px] font-normal text-stone-400">語錄 / 諧音梗</span>
+            </button>
+            <button type="button" data-gacha-type="photo" class="gacha-type-btn py-2 px-2 rounded-xl border border-stone-300 bg-white text-stone-600 text-xs font-bold cursor-pointer">
+              🖼️ 迷因梗圖<br/><span class="text-[10px] font-normal text-stone-400">照片 / 團員醜照</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Type A: Q&A Two-Sided Paper -->
+        <div id="gachaFieldsQA" class="space-y-3 bg-stone-50 p-3.5 rounded-xl border border-stone-200">
+          <div>
+            <label class="block text-xs font-bold text-stone-800 mb-1">紙條第一面（問句） <span class="text-crimson-600">*</span></label>
+            <input id="gachaQuestionInput" type="text" placeholder="例如：為什麼海是藍色的？" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm focus:outline-none focus:border-crimson-600" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-crimson-700 mb-1">紙條第二面（翻面答案） <span class="text-crimson-600">*</span></label>
+            <textarea id="gachaAnswerInput" rows="2" placeholder="例如：因為魚會blue blue blue...！" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm focus:outline-none focus:border-crimson-600"></textarea>
+          </div>
+        </div>
+
+        <!-- Type B: Single Joke -->
+        <div id="gachaFieldsJoke" class="hidden space-y-2 bg-stone-50 p-3.5 rounded-xl border border-stone-200">
+          <label class="block text-xs font-bold text-stone-800 mb-1">笑話 / 迷因語錄內容 <span class="text-crimson-600">*</span></label>
+          <textarea id="gachaJokeTextInput" rows="3" placeholder="輸入一段好笑的話、團員名言或冷笑話..." class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm focus:outline-none focus:border-crimson-600"></textarea>
+        </div>
+
+        <!-- Type C: Meme Photo -->
+        <div id="gachaFieldsPhoto" class="hidden space-y-3 bg-stone-50 p-3.5 rounded-xl border border-stone-200">
+          <div class="flex flex-wrap items-center gap-2">
+            <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-crimson-700 text-white text-xs font-medium hover:bg-crimson-800 cursor-pointer">
+              <span>📷 選取迷因照片</span>
+              <input id="gachaPhotoFileInput" type="file" accept="image/*" class="hidden" />
+            </label>
+            <span class="text-[11px] text-stone-500">或貼上圖片網址</span>
+          </div>
+          <input id="gachaPhotoUrlInput" type="text" placeholder="https://..." class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-xs" />
+          <div id="gachaPhotoPreviewBox" class="hidden rounded-xl overflow-hidden border border-stone-300 bg-white max-h-44 flex justify-center">
+            <img id="gachaPhotoPreviewImg" src="" alt="預覽" class="max-h-44 object-contain" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-stone-700 mb-1">圖片旁白（選填）</label>
+            <input id="gachaPhotoCaptionInput" type="text" placeholder="幫這張梗圖配一句旁白..." class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-stone-600 mb-1">投遞人暱稱（選填，預設為「神祕人」）</label>
+          <input id="gachaAuthorInput" type="text" placeholder="神祕人" class="w-full px-3 py-2 rounded-lg border border-stone-300 text-sm" />
+        </div>
+
+        <div class="pt-2 border-t border-stone-200 flex justify-end gap-2">
+          <button type="button" id="cancelAddGachaModalBtn" class="px-4 py-2 rounded-lg border border-stone-300 text-sm text-stone-600 cursor-pointer">取消</button>
+          <button type="submit" id="submitGachaBtn" class="px-5 py-2 rounded-lg bg-crimson-700 text-white text-sm font-bold hover:bg-crimson-800 cursor-pointer">塞進扭蛋機！</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 6: GACHA RESULT REVEAL (打開扭蛋＋雙面紙條翻轉) ==================== -->
+  <div id="gachaRevealModal" class="hidden fixed inset-0 z-50 bg-stone-950/75 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this)this.classList.add('hidden')">
+    <div class="bg-white border-2 border-stone-900 rounded-3xl max-w-md w-full shadow-2xl overflow-hidden animate-page">
+      <!-- Top Red Header -->
+      <div class="bg-crimson-700 text-white px-5 py-3.5 flex items-center justify-between border-b-2 border-stone-900">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-white text-crimson-700 font-display font-bold text-xs">OPEN!</span>
+          <span class="text-sm font-bold">扭蛋打開啦！</span>
+        </div>
+        <button type="button" id="closeGachaRevealBtn" class="w-7 h-7 rounded-full bg-black/25 text-white flex items-center justify-center hover:bg-black/40 cursor-pointer">✕</button>
+      </div>
+
+      <!-- Revealed Content Body -->
+      <div id="gachaRevealContent" class="p-6 bg-stone-50 flex flex-col items-center text-center space-y-4">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="px-5 py-3.5 bg-white border-t border-stone-200 flex items-center justify-between gap-2">
+        <span id="gachaRevealAuthor" class="text-xs text-stone-500">投遞人：神祕人</span>
+        <button
+          type="button"
+          id="spinAgainFromModalBtn"
+          class="px-4 py-2 rounded-xl bg-crimson-700 hover:bg-crimson-800 text-white text-xs font-bold cursor-pointer"
+        >
+          🎲 再轉一顆
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== MODAL 4: HEADER SETTINGS ==================== -->
+  <!-- ==================== MODAL 7: PEEK ALL GACHA POOL (右下角「查看扭蛋內容」) ==================== -->
+  <div id="gachaPoolModal" class="hidden fixed inset-0 z-50 bg-stone-950/65 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white border-2 border-stone-800 rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden my-auto animate-page">
+      <div class="px-5 py-4 border-b border-stone-200 bg-stone-100 flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-bold text-stone-900">扭蛋機內容一覽表（公開圖鑑）</h2>
+          <p class="text-xs text-stone-500 mt-0.5">這裡可以看到所有人投進機台裡的扭蛋內容</p>
+        </div>
+        <button type="button" id="closeGachaPoolModalBtn" class="p-1.5 rounded-lg text-stone-500 hover:text-crimson-700 cursor-pointer">✕</button>
+      </div>
+      <div id="gachaPoolListContainer" class="p-5 space-y-3 max-h-[72vh] overflow-y-auto bg-stone-50">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 8: UNIVERSAL LIGHTBOX (PHOTO + VIDEO + DOWNLOAD) ==================== -->
+  <div id="photoLightbox" class="hidden fixed inset-0 z-50 bg-stone-950/85 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target===this)this.classList.add('hidden')">
+    <div class="bg-white border border-warm-border rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl animate-page">
+      <div id="lightboxMediaStage" class="bg-stone-950 flex items-center justify-center h-[54vh] sm:h-[62vh] overflow-hidden relative select-none"></div>
+      <div class="p-4 sm:p-5 bg-[#FFFCF9] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="space-y-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span id="lightboxGroupTitle" class="text-xs font-bold text-crimson-700"></span>
+            <span id="lightboxDate" class="font-display text-xs text-warm-subtle"></span>
+          </div>
+          <p id="lightboxPhotoCaption" class="text-sm font-medium text-warm-text leading-relaxed"></p>
+        </div>
+        <button id="lightboxDownloadBtn" type="button" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-crimson-700 text-white text-xs sm:text-sm font-medium hover:bg-crimson-800 shrink-0 cursor-pointer">
+          <span>⬇️ 下載此檔案</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 9: HEADER SETTINGS ==================== -->
   <div id="headerModal" class="hidden fixed inset-0 z-50 bg-stone-950/50 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white border border-warm-border rounded-2xl max-w-lg w-full shadow-xl p-5 space-y-4">
       <h2 class="text-base font-bold text-warm-text">修改標題與公告</h2>
@@ -490,24 +887,32 @@
       let appData = {
         siteMeta: {
           title: "MOREBEUS",
-          subtitle: "Live Schedule & Merch Journal",
-          announcement: "歡迎查看 MOREBEUS 最新演出資訊、歌單與周邊相簿。",
+          subtitle: "Live Schedule & Fan Archive",
+          announcement: "歡迎查看 MOREBEUS 最新演出資訊、歌單、周邊相簿、場次影音與迷因扭蛋機！",
           lastUpdated: "--"
         },
         events: [],
-        merchGroups: []
+        merchGroups: [],
+        showSessions: [],
+        gachaItems: []
       };
 
-      let currentPage = 'events';
+      let currentPage = 'events'; // 'events' | 'retro' | 'showMedia' | 'gacha'
       let isEditMode = false;
       let selectedCity = '全部';
       let selectedTimeFilter = 'all';
       let selectedMerchCategory = '全部';
       let searchQuery = '';
       let expandedSetlistIds = new Set();
+
+      // Draft states
       let draftSetlist = [];
       let draftMerchPhotos = [];
-      let lightboxState = { groupId: null, index: 0 };
+      let draftAlbumMedia = [];
+      let currentGachaFormType = 'qa';
+      let isGachaSpinning = false;
+      let currentPaperFlipped = false;
+      let lightboxContext = { mode: 'merch', groupId: null, sessionId: null, albumId: null, index: 0 };
 
       // DOM Refs
       const siteTitleDisplay = document.getElementById('siteTitleDisplay');
@@ -517,12 +922,17 @@
       const totalCountStat = document.getElementById('totalCountStat');
       const upcomingCountStat = document.getElementById('upcomingCountStat');
       const merchCountPill = document.getElementById('merchCountPill');
+      const showSessionCountPill = document.getElementById('showSessionCountPill');
+      const gachaCountPill = document.getElementById('gachaCountPill');
+      const gachaPoolCountDisplay = document.getElementById('gachaPoolCountDisplay');
       const cityFilterBar = document.getElementById('cityFilterBar');
       const merchCategoryBar = document.getElementById('merchCategoryBar');
       const eventListContainer = document.getElementById('eventListContainer');
       const merchGroupsContainer = document.getElementById('merchGroupsContainer');
+      const showSessionsContainer = document.getElementById('showSessionsContainer');
       const eventEmptyState = document.getElementById('eventEmptyState');
       const merchEmptyState = document.getElementById('merchEmptyState');
+      const showSessionEmptyState = document.getElementById('showSessionEmptyState');
       const searchInput = document.getElementById('searchInput');
       const clearSearchBtn = document.getElementById('clearSearchBtn');
       const editBanner = document.getElementById('editBanner');
@@ -530,10 +940,17 @@
       const editModeLabel = document.getElementById('editModeLabel');
       const primaryAddBtn = document.getElementById('primaryAddBtn');
       const primaryAddLabel = document.getElementById('primaryAddLabel');
+
       const tabEventsBtn = document.getElementById('tabEventsBtn');
       const tabRetroBtn = document.getElementById('tabRetroBtn');
+      const tabShowMediaBtn = document.getElementById('tabShowMediaBtn');
+      const tabGachaBtn = document.getElementById('tabGachaBtn');
+
       const pageEvents = document.getElementById('pageEvents');
       const pageRetro = document.getElementById('pageRetro');
+      const pageShowMedia = document.getElementById('pageShowMedia');
+      const pageGacha = document.getElementById('pageGacha');
+
       const cloudStatusBadge = document.getElementById('cloudStatusBadge');
       const errorAlertBanner = document.getElementById('errorAlertBanner');
       const errorAlertDetail = document.getElementById('errorAlertDetail');
@@ -598,12 +1015,22 @@
             appData = {
               siteMeta: {
                 title: (record.siteMeta && record.siteMeta.title) || "MOREBEUS",
-                subtitle: (record.siteMeta && record.siteMeta.subtitle) || "Live Schedule & Merch Journal",
-                announcement: (record.siteMeta && record.siteMeta.announcement) || "歡迎查看 MOREBEUS 最新演出資訊與周邊相簿。",
+                subtitle: (record.siteMeta && record.siteMeta.subtitle) || "Live Schedule & Fan Archive",
+                announcement: (record.siteMeta && record.siteMeta.announcement) || "歡迎查看 MOREBEUS 最新演出資訊與互動扭蛋。",
                 lastUpdated: (record.siteMeta && record.siteMeta.lastUpdated) || "--"
               },
               events: Array.isArray(record.events) ? record.events : [],
-              merchGroups: Array.isArray(record.merchGroups) ? record.merchGroups : []
+              merchGroups: Array.isArray(record.merchGroups) ? record.merchGroups : [],
+              showSessions: Array.isArray(record.showSessions) ? record.showSessions : [],
+              gachaItems: Array.isArray(record.gachaItems) ? record.gachaItems : [
+                {
+                  id: "gacha-demo-1",
+                  type: "qa",
+                  question: "為什麼主唱上台前都要喝三杯溫開水？",
+                  answer: "因為第一杯潤喉、第二杯壓驚、第三杯忘記自己其實沒喝水！",
+                  author: "MOREBEUS 官方示範"
+                }
+              ]
             };
             setCloudStatus('ok', '雲端已同步');
             renderAll();
@@ -641,11 +1068,11 @@
 
           if (!res.ok) {
             const reason = (json && json.message) ? json.message : `HTTP ${res.status}`;
-            throw new Error(`儲存失敗 (${reason}) — 若照片過多超過免費版 100KB 上限，建議改用圖片網址或減少單次上傳張數。`);
+            throw new Error(`儲存失敗 (${reason}) — 若上傳照片過多超過免費版 100KB 上限，建議改用圖片網址！`);
           }
 
           setCloudStatus('ok', '雲端已同步');
-          showToast("✅ 已成功更新至雲端！所有人重新整理即可看到");
+          showToast("✅ 已成功更新至雲端！");
           renderAll();
           return true;
         } catch (err) {
@@ -656,33 +1083,42 @@
         }
       }
 
-      // Page Switcher
+      // Four-Page Switcher
       function switchPage(page) {
         currentPage = page;
-        if (page === 'events') {
-          pageEvents.classList.remove('hidden');
-          pageRetro.classList.add('hidden');
-          tabEventsBtn.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-crimson-700 text-white shadow-2xs transition-all cursor-pointer';
-          tabRetroBtn.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 transition-all cursor-pointer';
-          primaryAddLabel.textContent = '新增演出';
-        } else {
-          pageEvents.classList.add('hidden');
-          pageRetro.classList.remove('hidden');
-          tabRetroBtn.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-crimson-700 text-white shadow-2xs transition-all cursor-pointer';
-          tabEventsBtn.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 transition-all cursor-pointer';
-          primaryAddLabel.textContent = '新增周邊';
-          renderMerchGroups();
-        }
+        const activeTabClass = 'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-crimson-700 text-white shadow-2xs whitespace-nowrap transition-all cursor-pointer';
+        const inactiveTabClass = 'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-warm-muted hover:text-crimson-800 hover:bg-white/80 whitespace-nowrap transition-all cursor-pointer';
+
+        pageEvents.classList.toggle('hidden', page !== 'events');
+        pageRetro.classList.toggle('hidden', page !== 'retro');
+        pageShowMedia.classList.toggle('hidden', page !== 'showMedia');
+        pageGacha.classList.toggle('hidden', page !== 'gacha');
+
+        tabEventsBtn.className = page === 'events' ? activeTabClass : inactiveTabClass;
+        tabRetroBtn.className = page === 'retro' ? activeTabClass : inactiveTabClass;
+        tabShowMediaBtn.className = page === 'showMedia' ? activeTabClass : inactiveTabClass;
+        tabGachaBtn.className = page === 'gacha' ? activeTabClass : inactiveTabClass;
+
+        if (page === 'events') primaryAddLabel.textContent = '新增演出';
+        else if (page === 'retro') { primaryAddLabel.textContent = '新增周邊'; renderMerchGroups(); }
+        else if (page === 'showMedia') { primaryAddLabel.textContent = '新增場次'; renderShowSessions(); }
+        else { primaryAddLabel.textContent = '投遞扭蛋'; }
       }
 
       tabEventsBtn.addEventListener('click', () => switchPage('events'));
       tabRetroBtn.addEventListener('click', () => switchPage('retro'));
+      tabShowMediaBtn.addEventListener('click', () => switchPage('showMedia'));
+      tabGachaBtn.addEventListener('click', () => switchPage('gacha'));
 
       primaryAddBtn.addEventListener('click', () => {
         if (currentPage === 'events') openEventModal(null);
-        else openMerchModal(null);
+        else if (currentPage === 'retro') openMerchModal(null);
+        else if (currentPage === 'showMedia') openShowSessionModal(null);
+        else openAddGachaModal();
       });
       document.getElementById('openMerchModalBtn').addEventListener('click', () => openMerchModal(null));
+      document.getElementById('openShowSessionModalBtn').addEventListener('click', () => openShowSessionModal(null));
+      document.getElementById('openAddGachaBtn').addEventListener('click', () => openAddGachaModal());
 
       // Helpers
       function getTodayStr() {
@@ -714,6 +1150,58 @@
         if (!str) return '';
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
       }
+      function getYouTubeId(url) {
+        if (!url) return null;
+        const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+        return m ? m[1] : null;
+      }
+
+      async function triggerDownload(url, filename) {
+        if (!url) return;
+        const ytId = getYouTubeId(url);
+        if (ytId) { window.open(url, '_blank', 'noopener,noreferrer'); return; }
+        try {
+          if (url.startsWith('data:')) {
+            const a = document.createElement('a');
+            a.href = url; a.download = filename || 'MOREBEUS_photo.jpg';
+            document.body.appendChild(a); a.click(); a.remove();
+            showToast('已開始下載檔案');
+            return;
+          }
+          showToast('正在準備下載...');
+          const res = await fetch(url);
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl; a.download = filename || 'MOREBEUS_media';
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+          showToast('下載完成！');
+        } catch (err) {
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }
+      }
+
+      function compressImageFile(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const maxDim = 520;
+              let w = img.width, h = img.height;
+              if (w > h && w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              else if (h >= w && h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              resolve(canvas.toDataURL('image/jpeg', 0.6));
+            };
+            img.src = evt.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
 
       function renderAll() {
         siteTitleDisplay.textContent = appData.siteMeta.title || 'MOREBEUS';
@@ -723,9 +1211,15 @@
 
         const events = appData.events || [];
         const groups = appData.merchGroups || [];
+        const sessions = appData.showSessions || [];
+        const gachas = appData.gachaItems || [];
+
         totalCountStat.textContent = events.length;
         upcomingCountStat.textContent = events.filter(ev => !isEventPast(ev)).length;
         merchCountPill.textContent = groups.length;
+        showSessionCountPill.textContent = sessions.length;
+        gachaCountPill.textContent = gachas.length;
+        gachaPoolCountDisplay.textContent = gachas.length;
 
         const cities = ['全部'];
         events.forEach(ev => {
@@ -748,9 +1242,10 @@
 
         renderEvents();
         renderMerchGroups();
+        renderShowSessions();
       }
 
-      // Render Page 1: Events
+      // ==================== RENDER PAGE 1: EVENTS ====================
       function renderEvents() {
         const q = searchQuery.trim().toLowerCase();
         const events = appData.events || [];
@@ -877,7 +1372,7 @@
         }).join('');
       }
 
-      // Render Page 2: Numbered Merch Groups + Multi-Photos
+      // ==================== RENDER PAGE 2: MERCH GROUPS ====================
       function renderMerchGroups() {
         const groups = appData.merchGroups || [];
 
@@ -913,75 +1408,40 @@
 
           return `
             <article class="animate-page bg-[#FFFCF9] border border-warm-border rounded-2xl p-4 sm:p-5 shadow-2xs space-y-4">
-              <!-- Group Header: 1. XX周邊 (照片 × X) -->
               <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-warm-border/70 pb-3.5">
                 <div class="space-y-1.5 min-w-0">
                   <div class="flex flex-wrap items-center gap-2">
                     <span class="font-display font-bold text-base sm:text-lg text-crimson-700">${numStr}.</span>
                     <h2 class="text-base sm:text-lg font-bold text-warm-text">${escapeHtml(group.title)}</h2>
-                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-crimson-50 text-crimson-800 border border-crimson-200/80">
-                      ${escapeHtml(group.category || '限定小物')}
-                    </span>
-                    <span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-warm-tint text-warm-muted border border-warm-border">
-                      照片 × ${photos.length}
-                    </span>
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-crimson-50 text-crimson-800 border border-crimson-200/80">${escapeHtml(group.category || '限定小物')}</span>
+                    <span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-warm-tint text-warm-muted border border-warm-border">照片 × ${photos.length}</span>
                   </div>
-
                   <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-warm-muted">
                     ${group.date ? `<span class="font-display">${escapeHtml(group.date)}</span>` : ''}
                     ${group.tag ? `<span class="text-crimson-700 font-medium">${escapeHtml(group.tag)}</span>` : ''}
                   </div>
-
                   ${group.description ? `<p class="text-xs sm:text-sm text-warm-muted leading-relaxed">${escapeHtml(group.description)}</p>` : ''}
                 </div>
-
-                <!-- Group Actions -->
                 <div class="flex items-center gap-1.5 shrink-0 self-start">
-                  <button
-                    type="button"
-                    data-action="edit-merch-group"
-                    data-id="${escapeHtml(group.id)}"
-                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-crimson-200 bg-crimson-50/70 text-xs font-medium text-crimson-800 hover:bg-crimson-100 cursor-pointer"
-                  >
-                    <span>+ 加照片 / 編輯</span>
-                  </button>
-                  ${isEditMode ? `
-                    <button
-                      type="button"
-                      data-action="delete-merch-group"
-                      data-id="${escapeHtml(group.id)}"
-                      class="px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs cursor-pointer"
-                    >
-                      刪除
-                    </button>
-                  ` : ''}
+                  <button type="button" data-action="edit-merch-group" data-id="${escapeHtml(group.id)}" class="px-3 py-1.5 rounded-lg border border-crimson-200 bg-crimson-50/70 text-xs font-medium text-crimson-800 hover:bg-crimson-100 cursor-pointer">+ 加照片 / 編輯</button>
+                  ${isEditMode ? `<button type="button" data-action="delete-merch-group" data-id="${escapeHtml(group.id)}" class="px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs cursor-pointer">刪除</button>` : ''}
                 </div>
               </div>
 
-              <!-- Multi-Photo Retro Grid -->
               ${photos.length > 0 ? `
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   ${photos.map((photo, pIdx) => `
                     <div
-                      data-action="open-lightbox"
+                      data-action="open-merch-lightbox"
                       data-group-id="${escapeHtml(group.id)}"
                       data-photo-idx="${pIdx}"
                       class="group bg-white p-2 pb-2.5 rounded-xl border border-warm-border hover:border-crimson-300 shadow-2xs hover:shadow-md transition-all cursor-pointer flex flex-col"
                     >
                       <div class="aspect-square w-full rounded-lg overflow-hidden bg-stone-100 relative">
-                        <img
-                          src="${escapeHtml(photo.url)}"
-                          alt="${escapeHtml(photo.caption || group.title)}"
-                          loading="lazy"
-                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.2 rounded bg-black/55 text-white font-display text-[10px]">
-                          #${pIdx + 1}
-                        </span>
+                        <img src="${escapeHtml(photo.url)}" alt="${escapeHtml(photo.caption || group.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.2 rounded bg-black/55 text-white font-display text-[10px]">#${pIdx + 1}</span>
                       </div>
-                      ${photo.caption ? `
-                        <p class="mt-2 text-[11px] text-warm-muted line-clamp-1 px-0.5">${escapeHtml(photo.caption)}</p>
-                      ` : ''}
+                      ${photo.caption ? `<p class="mt-2 text-[11px] text-warm-muted line-clamp-1 px-0.5">${escapeHtml(photo.caption)}</p>` : ''}
                     </div>
                   `).join('')}
                 </div>
@@ -995,23 +1455,407 @@
         }).join('');
       }
 
+      // ==================== RENDER PAGE 3: SHOW SESSIONS ====================
+      function renderShowSessions() {
+        const sessions = appData.showSessions || [];
+        if (sessions.length === 0) {
+          showSessionsContainer.innerHTML = '';
+          showSessionEmptyState.classList.remove('hidden');
+          return;
+        }
+        showSessionEmptyState.classList.add('hidden');
+
+        showSessionsContainer.innerHTML = sessions.map((session, sIdx) => {
+          const albums = Array.isArray(session.albums) ? session.albums : [];
+          const numStr = String(sIdx + 1).padStart(2, '0');
+
+          return `
+            <article class="animate-page bg-white border border-warm-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-5">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-warm-border pb-4">
+                <div class="space-y-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-lg bg-crimson-700 text-white font-display font-bold text-sm">場次 ${numStr}</span>
+                    <h2 class="text-base sm:text-xl font-bold text-warm-text">${escapeHtml(session.title)}</h2>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-warm-muted pl-0.5">
+                    <span>📅 ${escapeHtml(session.date || '日期未定')}</span>
+                    ${session.venue ? `<span>📍 ${escapeHtml(session.venue)}</span>` : ''}
+                    <span class="text-crimson-700 font-medium">共 ${albums.length} 本個人相簿</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0 self-start sm:self-center">
+                  <button type="button" data-action="open-new-album" data-session-id="${escapeHtml(session.id)}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-crimson-700 text-white text-xs sm:text-sm font-medium hover:bg-crimson-800 shadow-2xs cursor-pointer">+ 建立我的相簿</button>
+                  ${isEditMode ? `
+                    <button type="button" data-action="edit-session" data-session-id="${escapeHtml(session.id)}" class="px-2.5 py-2 rounded-xl border border-warm-border text-xs text-warm-text hover:bg-warm-tint cursor-pointer">改場次</button>
+                    <button type="button" data-action="delete-session" data-session-id="${escapeHtml(session.id)}" class="px-2.5 py-2 rounded-xl border border-red-200 bg-red-50 text-xs text-red-700 cursor-pointer">刪除場次</button>
+                  ` : ''}
+                </div>
+              </div>
+
+              ${albums.length > 0 ? `
+                <div class="space-y-4">
+                  ${albums.map(album => {
+                    const mediaList = Array.isArray(album.media) ? album.media : [];
+                    return `
+                      <div class="rounded-2xl border border-warm-border/90 bg-[#FFFCF9] p-3.5 sm:p-4 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                          <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-crimson-50 text-crimson-800 border border-crimson-200 text-xs sm:text-sm font-bold">📁 (${escapeHtml(album.ownerName)}的) 相簿</span>
+                            <span class="text-xs text-warm-muted">照片/影片 × ${mediaList.length}</span>
+                            ${album.note ? `<span class="text-xs text-warm-subtle">— ${escapeHtml(album.note)}</span>` : ''}
+                          </div>
+
+                          <div class="flex items-center gap-1.5">
+                            <button type="button" data-action="edit-user-album" data-session-id="${escapeHtml(session.id)}" data-album-id="${escapeHtml(album.id)}" class="px-3 py-1 rounded-lg bg-white border border-crimson-200 text-xs font-medium text-crimson-700 hover:bg-crimson-50 cursor-pointer">+ 新增照片/影片</button>
+                            ${isEditMode ? `<button type="button" data-action="delete-user-album" data-session-id="${escapeHtml(session.id)}" data-album-id="${escapeHtml(album.id)}" class="px-2.5 py-1 rounded-lg border border-red-200 bg-red-50 text-xs text-red-700 cursor-pointer">刪除相簿</button>` : ''}
+                          </div>
+                        </div>
+
+                        ${mediaList.length > 0 ? `
+                          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                            ${mediaList.map((m, mIdx) => {
+                              const isVideo = m.type === 'video';
+                              const ytId = isVideo ? getYouTubeId(m.url) : null;
+                              const thumbUrl = isVideo ? (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '') : m.url;
+
+                              return `
+                                <div class="bg-white border border-warm-border rounded-xl p-2 flex flex-col justify-between group hover:border-crimson-300 transition-all">
+                                  <div
+                                    data-action="open-album-lightbox"
+                                    data-session-id="${escapeHtml(session.id)}"
+                                    data-album-id="${escapeHtml(album.id)}"
+                                    data-media-idx="${mIdx}"
+                                    class="aspect-square w-full rounded-lg bg-stone-900 overflow-hidden relative cursor-pointer flex items-center justify-center"
+                                  >
+                                    ${thumbUrl
+                                      ? `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(m.caption || '')}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />`
+                                      : `<div class="text-white/80 text-xs text-center px-2">🎬 影片檔案</div>`
+                                    }
+                                    ${isVideo ? `<span class="absolute inset-0 bg-black/25 flex items-center justify-center"><span class="w-9 h-9 rounded-full bg-crimson-700/90 text-white flex items-center justify-center text-xs shadow-md">▶</span></span>` : ''}
+                                  </div>
+
+                                  <div class="pt-2 flex items-center justify-between gap-1.5">
+                                    <span class="text-[11px] text-warm-muted truncate flex-1">${escapeHtml(m.caption || (isVideo ? `影片 #${mIdx + 1}` : `照片 #${mIdx + 1}`))}</span>
+                                    <button type="button" data-action="download-media" data-url="${escapeHtml(m.url)}" data-filename="${escapeHtml(`${session.title}_${album.ownerName}_${mIdx + 1}${isVideo ? '.mp4' : '.jpg'}`)}" class="px-2 py-1 rounded-md bg-warm-tint hover:bg-crimson-50 text-crimson-700 border border-warm-border text-[11px] font-medium shrink-0 cursor-pointer">⬇️ 下載</button>
+                                  </div>
+                                </div>
+                              `;
+                            }).join('')}
+                          </div>
+                        ` : `<div class="text-xs text-warm-subtle bg-white/80 border border-dashed border-warm-border rounded-xl py-4 text-center">(${escapeHtml(album.ownerName)}的) 相簿目前還是空的，點擊「+ 新增照片/影片」上傳分享！</div>`}
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              ` : `<div class="text-xs sm:text-sm text-warm-muted bg-warm-tint/70 border border-dashed border-crimson-200 rounded-xl py-7 text-center">這場演出還沒有人建立相簿，點擊右上角「+ 建立我的相簿」搶頭香分享照片與影片！</div>`}
+            </article>
+          `;
+        }).join('');
+      }
+
+      // ==================== PAGE 4: MEME GACHA MACHINE LOGIC ====================
+      const addGachaModal = document.getElementById('addGachaModal');
+      const addGachaForm = document.getElementById('addGachaForm');
+      const gachaFieldsQA = document.getElementById('gachaFieldsQA');
+      const gachaFieldsJoke = document.getElementById('gachaFieldsJoke');
+      const gachaFieldsPhoto = document.getElementById('gachaFieldsPhoto');
+      const gachaPhotoUrlInput = document.getElementById('gachaPhotoUrlInput');
+      const gachaPhotoPreviewBox = document.getElementById('gachaPhotoPreviewBox');
+      const gachaPhotoPreviewImg = document.getElementById('gachaPhotoPreviewImg');
+
+      function setGachaFormType(type) {
+        currentGachaFormType = type;
+        document.querySelectorAll('.gacha-type-btn').forEach(btn => {
+          const isSelected = btn.dataset.gachaType === type;
+          btn.className = isSelected
+            ? 'gacha-type-btn py-2 px-2 rounded-xl border-2 border-crimson-700 bg-crimson-50 text-crimson-800 text-xs font-bold cursor-pointer'
+            : 'gacha-type-btn py-2 px-2 rounded-xl border border-stone-300 bg-white text-stone-600 text-xs font-bold cursor-pointer';
+        });
+        gachaFieldsQA.classList.toggle('hidden', type !== 'qa');
+        gachaFieldsJoke.classList.toggle('hidden', type !== 'joke');
+        gachaFieldsPhoto.classList.toggle('hidden', type !== 'photo');
+      }
+
+      document.querySelectorAll('.gacha-type-btn').forEach(btn => {
+        btn.addEventListener('click', () => setGachaFormType(btn.dataset.gachaType));
+      });
+
+      gachaPhotoUrlInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (val) {
+          gachaPhotoPreviewImg.src = val;
+          gachaPhotoPreviewBox.classList.remove('hidden');
+        } else {
+          gachaPhotoPreviewBox.classList.add('hidden');
+        }
+      });
+
+      document.getElementById('gachaPhotoFileInput').addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        showToast('正在處理迷因圖片...');
+        const dataUrl = await compressImageFile(file);
+        gachaPhotoUrlInput.value = dataUrl;
+        gachaPhotoPreviewImg.src = dataUrl;
+        gachaPhotoPreviewBox.classList.remove('hidden');
+        e.target.value = '';
+      });
+
+      function openAddGachaModal() {
+        addGachaForm.reset();
+        gachaPhotoPreviewBox.classList.add('hidden');
+        setGachaFormType('qa');
+        addGachaModal.classList.remove('hidden');
+      }
+
+      document.getElementById('closeAddGachaModalBtn').addEventListener('click', () => addGachaModal.classList.add('hidden'));
+      document.getElementById('cancelAddGachaModalBtn').addEventListener('click', () => addGachaModal.classList.add('hidden'));
+
+      addGachaForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const author = document.getElementById('gachaAuthorInput').value.trim() || '神祕人';
+        let newItem = {
+          id: `gacha-${Date.now()}`,
+          type: currentGachaFormType,
+          author
+        };
+
+        if (currentGachaFormType === 'qa') {
+          const q = document.getElementById('gachaQuestionInput').value.trim();
+          const a = document.getElementById('gachaAnswerInput').value.trim();
+          if (!q || !a) { alert('請填寫紙條正面的「問句」與背面的「答案」！'); return; }
+          newItem.question = q;
+          newItem.answer = a;
+        } else if (currentGachaFormType === 'joke') {
+          const text = document.getElementById('gachaJokeTextInput').value.trim();
+          if (!text) { alert('請填寫笑話或迷因語錄！'); return; }
+          newItem.text = text;
+        } else {
+          const url = gachaPhotoUrlInput.value.trim();
+          if (!url) { alert('請上傳迷因照片或貼上圖片網址！'); return; }
+          newItem.imageUrl = url;
+          newItem.caption = document.getElementById('gachaPhotoCaptionInput').value.trim();
+        }
+
+        const btn = document.getElementById('submitGachaBtn');
+        btn.disabled = true; btn.textContent = '塞入中...';
+        if (!Array.isArray(appData.gachaItems)) appData.gachaItems = [];
+        appData.gachaItems.push(newItem);
+
+        const ok = await saveToCloud();
+        btn.disabled = false; btn.textContent = '塞進扭蛋機！';
+        if (ok) {
+          addGachaModal.classList.add('hidden');
+          showToast('🎉 你的神祕扭蛋已偷偷混入機台裡！');
+        }
+      });
+
+      // Spin the Gacha Machine!
+      const gachaMachineBody = document.getElementById('gachaMachineBody');
+      const gachaKnobHandle = document.getElementById('gachaKnobHandle');
+      const droppedCapsuleSlot = document.getElementById('droppedCapsuleSlot');
+      const chuteEmptyHint = document.getElementById('chuteEmptyHint');
+      const gachaRevealModal = document.getElementById('gachaRevealModal');
+      const gachaRevealContent = document.getElementById('gachaRevealContent');
+
+      function showGachaReveal(item) {
+        currentPaperFlipped = false;
+        document.getElementById('gachaRevealAuthor').textContent = `投遞人：${item.author || '神祕人'}`;
+
+        if (item.type === 'qa') {
+          // Two-sided Q&A Folded Paper Card
+          gachaRevealContent.innerHTML = `
+            <div class="w-full space-y-3">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-200 text-stone-700 text-xs font-bold">
+                <span>📄 扭蛋裡折了一張小紙條</span>
+              </div>
+
+              <div
+                id="gachaPaperCard"
+                class="w-full min-h-[170px] bg-white border-2 border-stone-800 rounded-2xl p-5 shadow-md flex flex-col items-center justify-center relative cursor-pointer transition-all hover:border-crimson-600"
+              >
+                <span id="paperSideBadge" class="absolute top-3 left-3 px-2 py-0.5 rounded bg-stone-800 text-white text-[10px] font-bold">
+                  第一面：問句
+                </span>
+                <p id="paperMainText" class="text-base sm:text-lg font-bold text-stone-900 leading-relaxed mt-3 whitespace-pre-line">
+                  ${escapeHtml(item.question)}
+                </p>
+                <span class="mt-4 text-[11px] text-crimson-700 font-semibold animate-pulse">
+                  👆 點擊紙條翻看背面答案
+                </span>
+              </div>
+            </div>
+          `;
+
+          const paperCard = document.getElementById('gachaPaperCard');
+          paperCard.addEventListener('click', () => {
+            currentPaperFlipped = !currentPaperFlipped;
+            const badge = document.getElementById('paperSideBadge');
+            const mainText = document.getElementById('paperMainText');
+            if (currentPaperFlipped) {
+              paperCard.classList.remove('bg-white', 'border-stone-800');
+              paperCard.classList.add('bg-crimson-50', 'border-crimson-700');
+              badge.className = 'absolute top-3 left-3 px-2 py-0.5 rounded bg-crimson-700 text-white text-[10px] font-bold';
+              badge.textContent = '第二面：答案';
+              mainText.className = 'text-base sm:text-lg font-bold text-crimson-900 leading-relaxed mt-3 whitespace-pre-line';
+              mainText.textContent = item.answer;
+            } else {
+              paperCard.classList.add('bg-white', 'border-stone-800');
+              paperCard.classList.remove('bg-crimson-50', 'border-crimson-700');
+              badge.className = 'absolute top-3 left-3 px-2 py-0.5 rounded bg-stone-800 text-white text-[10px] font-bold';
+              badge.textContent = '第一面：問句';
+              mainText.className = 'text-base sm:text-lg font-bold text-stone-900 leading-relaxed mt-3 whitespace-pre-line';
+              mainText.textContent = item.question;
+            }
+          });
+        } else if (item.type === 'joke') {
+          gachaRevealContent.innerHTML = `
+            <div class="w-full space-y-3">
+              <span class="inline-block px-3 py-1 rounded-full bg-stone-200 text-stone-700 text-xs font-bold">💬 迷因語錄 / 笑話</span>
+              <div class="w-full bg-white border-2 border-stone-800 rounded-2xl p-6 shadow-md">
+                <p class="text-base sm:text-lg font-bold text-stone-900 leading-relaxed whitespace-pre-line">${escapeHtml(item.text)}</p>
+              </div>
+            </div>
+          `;
+        } else {
+          gachaRevealContent.innerHTML = `
+            <div class="w-full space-y-3">
+              <span class="inline-block px-3 py-1 rounded-full bg-crimson-100 text-crimson-800 text-xs font-bold">🖼️ 迷因梗圖</span>
+              <div class="w-full bg-white border-2 border-stone-800 rounded-2xl p-2 shadow-md overflow-hidden">
+                <img src="${escapeHtml(item.imageUrl)}" alt="迷因圖片" class="max-h-64 w-full object-contain rounded-xl bg-stone-100" />
+              </div>
+              ${item.caption ? `<p class="text-sm font-bold text-stone-800">${escapeHtml(item.caption)}</p>` : ''}
+            </div>
+          `;
+        }
+
+        gachaRevealModal.classList.remove('hidden');
+      }
+
+      function spinGachaMachine() {
+        const items = appData.gachaItems || [];
+        if (items.length === 0) {
+          alert('扭蛋機目前是空的！快點擊「＋ 投遞新扭蛋」塞入第一顆迷因吧！');
+          return;
+        }
+        if (isGachaSpinning) return;
+        isGachaSpinning = true;
+
+        gachaRevealModal.classList.add('hidden');
+        droppedCapsuleSlot.classList.add('hidden');
+        chuteEmptyHint.classList.remove('hidden');
+
+        gachaMachineBody.classList.add('gacha-shaking');
+        gachaKnobHandle.classList.add('animate-knob-spin');
+
+        setTimeout(() => {
+          gachaMachineBody.classList.remove('gacha-shaking');
+          gachaKnobHandle.classList.remove('animate-knob-spin');
+
+          // Drop capsule ball
+          chuteEmptyHint.classList.add('hidden');
+          droppedCapsuleSlot.classList.remove('hidden');
+
+          const randomItem = items[Math.floor(Math.random() * items.length)];
+          setTimeout(() => {
+            isGachaSpinning = false;
+            showGachaReveal(randomItem);
+          }, 420);
+        }, 680);
+      }
+
+      document.getElementById('spinGachaBtn').addEventListener('click', spinGachaMachine);
+      document.getElementById('spinGachaBigBtn').addEventListener('click', spinGachaMachine);
+      document.getElementById('spinAgainFromModalBtn').addEventListener('click', spinGachaMachine);
+      document.getElementById('closeGachaRevealBtn').addEventListener('click', () => gachaRevealModal.classList.add('hidden'));
+
+      // Bottom-Right Button: "查看扭蛋內容" (Peek all items)
+      const gachaPoolModal = document.getElementById('gachaPoolModal');
+      const gachaPoolListContainer = document.getElementById('gachaPoolListContainer');
+
+      function renderGachaPoolList() {
+        const items = appData.gachaItems || [];
+        if (!items.length) {
+          gachaPoolListContainer.innerHTML = `<div class="text-center py-8 text-xs text-stone-500">目前機台內還沒有任何扭蛋。</div>`;
+          return;
+        }
+
+        gachaPoolListContainer.innerHTML = items.map((item, idx) => {
+          let badge = '';
+          let previewHtml = '';
+
+          if (item.type === 'qa') {
+            badge = `<span class="px-2 py-0.5 rounded bg-stone-800 text-white text-[10px] font-bold">問答紙條</span>`;
+            previewHtml = `
+              <p class="text-xs font-bold text-stone-900">問：${escapeHtml(item.question)}</p>
+              <p class="text-xs text-crimson-700 mt-0.5">答：${escapeHtml(item.answer)}</p>
+            `;
+          } else if (item.type === 'joke') {
+            badge = `<span class="px-2 py-0.5 rounded bg-stone-200 text-stone-800 text-[10px] font-bold">單句笑話</span>`;
+            previewHtml = `<p class="text-xs text-stone-800 whitespace-pre-line">${escapeHtml(item.text)}</p>`;
+          } else {
+            badge = `<span class="px-2 py-0.5 rounded bg-crimson-100 text-crimson-800 text-[10px] font-bold">迷因梗圖</span>`;
+            previewHtml = `
+              <div class="flex items-center gap-3 mt-1">
+                <img src="${escapeHtml(item.imageUrl)}" class="w-16 h-16 rounded-lg object-cover border border-stone-300 bg-white shrink-0" />
+                <p class="text-xs text-stone-700">${escapeHtml(item.caption || '（無文字說明）')}</p>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="bg-white border border-stone-200 rounded-xl p-3.5 flex items-start justify-between gap-3">
+              <div class="space-y-1 min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-display font-bold text-xs text-crimson-700">#${idx + 1}</span>
+                  ${badge}
+                  <span class="text-[11px] text-stone-400">by ${escapeHtml(item.author || '神祕人')}</span>
+                </div>
+                ${previewHtml}
+              </div>
+              ${isEditMode ? `
+                <button type="button" data-del-gacha-id="${escapeHtml(item.id)}" class="px-2.5 py-1 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs shrink-0 cursor-pointer">
+                  刪除
+                </button>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('openGachaListBtn').addEventListener('click', () => {
+        renderGachaPoolList();
+        gachaPoolModal.classList.remove('hidden');
+      });
+      document.getElementById('closeGachaPoolModalBtn').addEventListener('click', () => gachaPoolModal.classList.add('hidden'));
+
+      gachaPoolListContainer.addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-del-gacha-id]');
+        if (!btn) return;
+        const id = btn.dataset.delGachaId;
+        if (confirm('確定要刪除這顆扭蛋嗎？')) {
+          appData.gachaItems = (appData.gachaItems || []).filter(g => g.id !== id);
+          await saveToCloud();
+          renderGachaPoolList();
+        }
+      });
+
       // Edit Mode Toggle
       toggleEditModeBtn.addEventListener('click', () => {
         isEditMode = !isEditMode;
         editBanner.classList.toggle('hidden', !isEditMode);
         editModeLabel.textContent = isEditMode ? '編輯中' : '編輯模式';
-        renderEvents();
-        renderMerchGroups();
+        renderAll();
       });
       document.getElementById('bannerCloseEditBtn').addEventListener('click', () => {
         isEditMode = false;
         editBanner.classList.add('hidden');
         editModeLabel.textContent = '編輯模式';
-        renderEvents();
-        renderMerchGroups();
+        renderAll();
       });
 
-      // Setlist Editor inside Event Modal
+      // ==================== MODAL 1 LOGIC: EVENTS ====================
       const setlistEditorRows = document.getElementById('setlistEditorRows');
       function renderSetlistEditor() {
         if (!draftSetlist.length) {
@@ -1022,7 +1866,7 @@
           <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-lg border border-warm-border">
             <span class="font-display font-bold text-xs text-crimson-700 w-5 text-center">${idx + 1}</span>
             <input type="text" value="${escapeHtml(s.title)}" placeholder="歌曲名稱" oninput="window.__updSong(${idx}, 'title', this.value)" class="flex-1 min-w-0 px-2 py-1 text-xs border border-warm-border rounded" />
-            <input type="text" value="${escapeHtml(s.note)}" placeholder="備註 (如 ENCORE)" oninput="window.__updSong(${idx}, 'note', this.value)" class="w-28 sm:w-36 px-2 py-1 text-xs border border-warm-border rounded" />
+            <input type="text" value="${escapeHtml(s.note)}" placeholder="備註" oninput="window.__updSong(${idx}, 'note', this.value)" class="w-28 sm:w-36 px-2 py-1 text-xs border border-warm-border rounded" />
             <button type="button" onclick="window.__delSong(${idx})" class="text-crimson-600 text-xs px-2 hover:bg-crimson-50 rounded cursor-pointer">✕</button>
           </div>
         `).join('');
@@ -1030,11 +1874,7 @@
       window.__updSong = (i, f, v) => { if (draftSetlist[i]) draftSetlist[i][f] = v; };
       window.__delSong = (i) => { draftSetlist.splice(i, 1); renderSetlistEditor(); };
 
-      document.getElementById('addSongRowBtn').addEventListener('click', () => {
-        draftSetlist.push({ title: '', note: '' });
-        renderSetlistEditor();
-      });
-
+      document.getElementById('addSongRowBtn').addEventListener('click', () => { draftSetlist.push({ title: '', note: '' }); renderSetlistEditor(); });
       const bulkPasteBox = document.getElementById('bulkPasteBox');
       const bulkPasteTextarea = document.getElementById('bulkPasteTextarea');
       document.getElementById('toggleBulkPasteBtn').addEventListener('click', () => bulkPasteBox.classList.toggle('hidden'));
@@ -1053,11 +1893,8 @@
         renderSetlistEditor();
       });
 
-      // Event Modal
       const eventModal = document.getElementById('eventModal');
       const eventForm = document.getElementById('eventForm');
-      const submitEventBtn = document.getElementById('submitEventBtn');
-
       function openEventModal(ev = null) {
         bulkPasteBox.classList.add('hidden');
         if (ev) {
@@ -1088,15 +1925,13 @@
         renderSetlistEditor();
         eventModal.classList.remove('hidden');
       }
-
       document.getElementById('closeEventModalBtn').addEventListener('click', () => eventModal.classList.add('hidden'));
       document.getElementById('cancelEventModalBtn').addEventListener('click', () => eventModal.classList.add('hidden'));
 
       eventForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        submitEventBtn.disabled = true;
-        submitEventBtn.textContent = '同步中...';
-
+        const btn = document.getElementById('submitEventBtn');
+        btn.disabled = true; btn.textContent = '同步中...';
         const id = document.getElementById('fieldId').value;
         const payload = {
           id: id || `evt-${Date.now()}`,
@@ -1115,7 +1950,6 @@
           setlistHidden: document.getElementById('fieldSetlistHidden').checked,
           setlist: draftSetlist.map(s => ({ title: (s.title || '').trim(), note: (s.note || '').trim() })).filter(s => s.title)
         };
-
         if (!Array.isArray(appData.events)) appData.events = [];
         if (id) {
           const idx = appData.events.findIndex(item => item.id === id);
@@ -1123,10 +1957,8 @@
         } else {
           appData.events.unshift(payload);
         }
-
         const ok = await saveToCloud();
-        submitEventBtn.disabled = false;
-        submitEventBtn.textContent = '儲存至雲端';
+        btn.disabled = false; btn.textContent = '儲存至雲端';
         if (ok) eventModal.classList.add('hidden');
       });
 
@@ -1135,7 +1967,6 @@
         if (!btn) return;
         const action = btn.dataset.action;
         const id = btn.dataset.id;
-
         if (action === 'toggle-setlist') {
           if (expandedSetlistIds.has(id)) expandedSetlistIds.delete(id);
           else expandedSetlistIds.add(id);
@@ -1151,89 +1982,33 @@
         }
       });
 
-      // Merch Group Multi-Photo Editor
+      // ==================== MODAL 2 LOGIC: MERCH GROUPS ====================
       const merchModal = document.getElementById('merchModal');
       const merchForm = document.getElementById('merchForm');
       const merchPhotosEditorList = document.getElementById('merchPhotosEditorList');
 
       function renderMerchPhotosEditor() {
         if (!draftMerchPhotos.length) {
-          merchPhotosEditorList.innerHTML = `<div class="text-xs text-warm-subtle bg-white/80 border border-dashed border-crimson-200 rounded-lg py-3 text-center">尚未新增照片，點擊上方「📷 多選上傳照片」或「+ 貼網址」</div>`;
+          merchPhotosEditorList.innerHTML = `<div class="text-xs text-warm-subtle bg-white/80 border border-dashed border-crimson-200 rounded-lg py-3 text-center">尚未新增照片</div>`;
           return;
         }
-
         merchPhotosEditorList.innerHTML = draftMerchPhotos.map((p, idx) => `
           <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-warm-border">
-            <div class="w-12 h-12 rounded-lg bg-stone-100 overflow-hidden shrink-0 border border-warm-border/60 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-lg bg-stone-100 overflow-hidden shrink-0 flex items-center justify-center">
               ${p.url ? `<img src="${escapeHtml(p.url)}" class="w-full h-full object-cover" />` : `<span class="text-[10px] text-warm-subtle">無預覽</span>`}
             </div>
             <div class="flex-1 min-w-0 space-y-1">
-              <input
-                type="text"
-                value="${escapeHtml(p.url)}"
-                placeholder="圖片網址 (https://...)"
-                oninput="window.__updMerchPhoto(${idx}, 'url', this.value)"
-                class="w-full px-2 py-1 text-xs border border-warm-border rounded"
-              />
-              <input
-                type="text"
-                value="${escapeHtml(p.caption)}"
-                placeholder="單張照片短語說明（選填，例如：正面實穿、背面印刷細節）"
-                oninput="window.__updMerchPhoto(${idx}, 'caption', this.value)"
-                class="w-full px-2 py-1 text-xs border border-warm-border rounded"
-              />
+              <input type="text" value="${escapeHtml(p.url)}" placeholder="圖片網址 (https://...)" oninput="window.__updMerchPhoto(${idx}, 'url', this.value)" class="w-full px-2 py-1 text-xs border border-warm-border rounded" />
+              <input type="text" value="${escapeHtml(p.caption)}" placeholder="單張短語說明（選填）" oninput="window.__updMerchPhoto(${idx}, 'caption', this.value)" class="w-full px-2 py-1 text-xs border border-warm-border rounded" />
             </div>
-            <button type="button" onclick="window.__delMerchPhoto(${idx})" class="p-1.5 text-crimson-600 hover:bg-crimson-50 rounded-lg text-xs shrink-0 cursor-pointer" title="移除這張照片">✕</button>
+            <button type="button" onclick="window.__delMerchPhoto(${idx})" class="p-1.5 text-crimson-600 text-xs cursor-pointer">✕</button>
           </div>
         `).join('');
       }
+      window.__updMerchPhoto = (idx, f, v) => { if (draftMerchPhotos[idx]) { draftMerchPhotos[idx][f] = v; if (f === 'url') renderMerchPhotosEditor(); } };
+      window.__delMerchPhoto = (idx) => { draftMerchPhotos.splice(idx, 1); renderMerchPhotosEditor(); };
 
-      window.__updMerchPhoto = (idx, field, val) => {
-        if (draftMerchPhotos[idx]) {
-          draftMerchPhotos[idx][field] = val;
-          if (field === 'url') renderMerchPhotosEditor();
-        }
-      };
-      window.__delMerchPhoto = (idx) => {
-        draftMerchPhotos.splice(idx, 1);
-        renderMerchPhotosEditor();
-      };
-
-      document.getElementById('addPhotoUrlRowBtn').addEventListener('click', () => {
-        draftMerchPhotos.push({ url: '', caption: '' });
-        renderMerchPhotosEditor();
-      });
-
-      // Multi-file Image Compression Handler
-      function compressImageFile(file) {
-        return new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (evt) => {
-            const img = new Image();
-            img.onload = () => {
-              const canvas = document.createElement('canvas');
-              const maxDim = 560;
-              let w = img.width;
-              let h = img.height;
-              if (w > h && w > maxDim) {
-                h = Math.round((h * maxDim) / w);
-                w = maxDim;
-              } else if (h >= w && h > maxDim) {
-                w = Math.round((w * maxDim) / h);
-                h = maxDim;
-              }
-              canvas.width = w;
-              canvas.height = h;
-              const ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, w, h);
-              resolve(canvas.toDataURL('image/jpeg', 0.65));
-            };
-            img.src = evt.target.result;
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-
+      document.getElementById('addPhotoUrlRowBtn').addEventListener('click', () => { draftMerchPhotos.push({ url: '', caption: '' }); renderMerchPhotosEditor(); });
       document.getElementById('merchMultiFileInput').addEventListener('change', async (e) => {
         const files = Array.from(e.target.files || []);
         if (!files.length) return;
@@ -1243,7 +2018,6 @@
           draftMerchPhotos.push({ url: dataUrl, caption: '' });
         }
         renderMerchPhotosEditor();
-        showToast(`已加入 ${files.length} 張照片`);
         e.target.value = '';
       });
 
@@ -1267,21 +2041,14 @@
         renderMerchPhotosEditor();
         merchModal.classList.remove('hidden');
       }
-
       document.getElementById('closeMerchModalBtn').addEventListener('click', () => merchModal.classList.add('hidden'));
       document.getElementById('cancelMerchModalBtn').addEventListener('click', () => merchModal.classList.add('hidden'));
 
       merchForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitMerchBtn');
-        btn.disabled = true;
-        btn.textContent = '同步中...';
-
+        btn.disabled = true; btn.textContent = '同步中...';
         const id = document.getElementById('merchGroupId').value;
-        const cleanPhotos = draftMerchPhotos
-          .map(p => ({ url: (p.url || '').trim(), caption: (p.caption || '').trim() }))
-          .filter(p => p.url !== '');
-
         const payload = {
           id: id || `merch-grp-${Date.now()}`,
           title: document.getElementById('merchGroupTitle').value.trim(),
@@ -1289,9 +2056,8 @@
           tag: document.getElementById('merchGroupTag').value.trim(),
           date: document.getElementById('merchGroupDate').value,
           description: document.getElementById('merchGroupDesc').value.trim(),
-          photos: cleanPhotos
+          photos: draftMerchPhotos.map(p => ({ url: (p.url || '').trim(), caption: (p.caption || '').trim() })).filter(p => p.url !== '')
         };
-
         if (!Array.isArray(appData.merchGroups)) appData.merchGroups = [];
         if (id) {
           const idx = appData.merchGroups.findIndex(g => g.id === id);
@@ -1299,43 +2065,276 @@
         } else {
           appData.merchGroups.push(payload);
         }
-
         const ok = await saveToCloud();
-        btn.disabled = false;
-        btn.textContent = '儲存並同步雲端';
+        btn.disabled = false; btn.textContent = '儲存並同步雲端';
         if (ok) merchModal.classList.add('hidden');
       });
 
-      // Lightbox Carousel
-      const photoLightbox = document.getElementById('photoLightbox');
-      function updateLightboxView() {
-        const group = (appData.merchGroups || []).find(g => g.id === lightboxState.groupId);
-        if (!group || !group.photos || !group.photos.length) return;
-        const total = group.photos.length;
-        const idx = ((lightboxState.index % total) + total) % total;
-        lightboxState.index = idx;
-        const photo = group.photos[idx];
+      // ==================== MODAL 3 & 4 LOGIC: SHOW SESSIONS & USER ALBUMS ====================
+      const showSessionModal = document.getElementById('showSessionModal');
+      const showSessionForm = document.getElementById('showSessionForm');
 
-        document.getElementById('lightboxImg').src = photo.url;
-        document.getElementById('lightboxGroupTitle').textContent = group.title;
-        document.getElementById('lightboxDate').textContent = group.date || '';
-        document.getElementById('lightboxPhotoCaption').textContent = photo.caption || group.description || '';
-        document.getElementById('lightboxCounter').textContent = `${idx + 1} / ${total}`;
+      function openShowSessionModal(session = null) {
+        if (session) {
+          document.getElementById('showSessionModalTitle').textContent = '編輯場次資訊';
+          document.getElementById('sessionId').value = session.id;
+          document.getElementById('sessionTitle').value = session.title || '';
+          document.getElementById('sessionDate').value = session.date || '';
+          document.getElementById('sessionVenue').value = session.venue || '';
+        } else {
+          document.getElementById('showSessionModalTitle').textContent = '新增場次相簿區';
+          showSessionForm.reset();
+          document.getElementById('sessionId').value = '';
+          document.getElementById('sessionDate').value = getTodayStr();
+        }
+        showSessionModal.classList.remove('hidden');
+      }
+      document.getElementById('closeShowSessionModalBtn').addEventListener('click', () => showSessionModal.classList.add('hidden'));
+      document.getElementById('cancelShowSessionModalBtn').addEventListener('click', () => showSessionModal.classList.add('hidden'));
+
+      showSessionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitShowSessionBtn');
+        btn.disabled = true; btn.textContent = '同步中...';
+        const id = document.getElementById('sessionId').value;
+        if (!Array.isArray(appData.showSessions)) appData.showSessions = [];
+
+        if (id) {
+          const idx = appData.showSessions.findIndex(s => s.id === id);
+          if (idx !== -1) {
+            appData.showSessions[idx].title = document.getElementById('sessionTitle').value.trim();
+            appData.showSessions[idx].date = document.getElementById('sessionDate').value;
+            appData.showSessions[idx].venue = document.getElementById('sessionVenue').value.trim();
+          }
+        } else {
+          appData.showSessions.push({
+            id: `sess-${Date.now()}`,
+            title: document.getElementById('sessionTitle').value.trim(),
+            date: document.getElementById('sessionDate').value,
+            venue: document.getElementById('sessionVenue').value.trim(),
+            albums: []
+          });
+        }
+        const ok = await saveToCloud();
+        btn.disabled = false; btn.textContent = '建立場次';
+        if (ok) showSessionModal.classList.add('hidden');
+      });
+
+      const userAlbumModal = document.getElementById('userAlbumModal');
+      const userAlbumForm = document.getElementById('userAlbumForm');
+      const albumMediaEditorList = document.getElementById('albumMediaEditorList');
+
+      function renderAlbumMediaEditor() {
+        if (!draftAlbumMedia.length) {
+          albumMediaEditorList.innerHTML = `<div class="text-xs text-warm-subtle bg-white/80 border border-dashed border-crimson-200 rounded-lg py-3 text-center">尚未新增照片或影片，請點擊上方按鈕加入！</div>`;
+          return;
+        }
+        albumMediaEditorList.innerHTML = draftAlbumMedia.map((m, idx) => {
+          const isVideo = m.type === 'video';
+          const ytId = isVideo ? getYouTubeId(m.url) : null;
+          const preview = isVideo ? (ytId ? `https://img.youtube.com/vi/${ytId}/default.jpg` : '') : m.url;
+
+          return `
+            <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-warm-border">
+              <div class="w-12 h-12 rounded-lg bg-stone-900 overflow-hidden shrink-0 flex items-center justify-center text-white text-[10px]">
+                ${preview ? `<img src="${escapeHtml(preview)}" class="w-full h-full object-cover" />` : (isVideo ? '🎬 影片' : '📷 照片')}
+              </div>
+              <div class="flex-1 min-w-0 space-y-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold ${isVideo ? 'bg-amber-100 text-amber-800' : 'bg-crimson-50 text-crimson-700'}">
+                    ${isVideo ? '影片' : '照片'}
+                  </span>
+                  <input type="text" value="${escapeHtml(m.url)}" placeholder="${isVideo ? '貼上 YouTube 連結或 .mp4 影片網址' : '貼上圖片網址 (https://...)'}" oninput="window.__updAlbumMedia(${idx}, 'url', this.value)" class="flex-1 min-w-0 px-2 py-1 text-xs border border-warm-border rounded" />
+                </div>
+                <input type="text" value="${escapeHtml(m.caption)}" placeholder="曲目名稱或簡短說明（選填）" oninput="window.__updAlbumMedia(${idx}, 'caption', this.value)" class="w-full px-2 py-1 text-xs border border-warm-border rounded" />
+              </div>
+              <button type="button" onclick="window.__delAlbumMedia(${idx})" class="p-1.5 text-crimson-600 text-xs cursor-pointer">✕</button>
+            </div>
+          `;
+        }).join('');
       }
 
-      document.getElementById('closeLightboxBtn').addEventListener('click', () => photoLightbox.classList.add('hidden'));
-      document.getElementById('lightboxPrevBtn').addEventListener('click', () => { lightboxState.index -= 1; updateLightboxView(); });
-      document.getElementById('lightboxNextBtn').addEventListener('click', () => { lightboxState.index += 1; updateLightboxView(); });
+      window.__updAlbumMedia = (idx, f, v) => { if (draftAlbumMedia[idx]) { draftAlbumMedia[idx][f] = v; if (f === 'url') renderAlbumMediaEditor(); } };
+      window.__delAlbumMedia = (idx) => { draftAlbumMedia.splice(idx, 1); renderAlbumMediaEditor(); };
+
+      document.getElementById('addAlbumPhotoUrlBtn').addEventListener('click', () => { draftAlbumMedia.push({ type: 'photo', url: '', caption: '' }); renderAlbumMediaEditor(); });
+      document.getElementById('addAlbumVideoUrlBtn').addEventListener('click', () => { draftAlbumMedia.push({ type: 'video', url: '', caption: '' }); renderAlbumMediaEditor(); });
+      document.getElementById('albumMultiPhotoInput').addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        showToast(`正在處理 ${files.length} 張照片...`);
+        for (const f of files) {
+          const dataUrl = await compressImageFile(f);
+          draftAlbumMedia.push({ type: 'photo', url: dataUrl, caption: '' });
+        }
+        renderAlbumMediaEditor();
+        e.target.value = '';
+      });
+
+      function openUserAlbumModal(sessionId, album = null) {
+        const session = (appData.showSessions || []).find(s => s.id === sessionId);
+        if (!session) return;
+        document.getElementById('albumTargetSessionId').value = sessionId;
+        document.getElementById('userAlbumSessionSubtitle').textContent = `所屬場次：${session.title} (${session.date})`;
+
+        if (album) {
+          document.getElementById('userAlbumModalTitle').textContent = `編輯 (${album.ownerName}的) 相簿`;
+          document.getElementById('albumId').value = album.id;
+          document.getElementById('albumOwnerName').value = album.ownerName || '';
+          document.getElementById('albumNote').value = album.note || '';
+          draftAlbumMedia = (album.media || []).map(m => ({ type: m.type || 'photo', url: m.url || '', caption: m.caption || '' }));
+        } else {
+          document.getElementById('userAlbumModalTitle').textContent = '建立我的場次相簿';
+          userAlbumForm.reset();
+          document.getElementById('albumTargetSessionId').value = sessionId;
+          document.getElementById('albumId').value = '';
+          draftAlbumMedia = [];
+        }
+        renderAlbumMediaEditor();
+        userAlbumModal.classList.remove('hidden');
+      }
+
+      document.getElementById('closeUserAlbumModalBtn').addEventListener('click', () => userAlbumModal.classList.add('hidden'));
+      document.getElementById('cancelUserAlbumModalBtn').addEventListener('click', () => userAlbumModal.classList.add('hidden'));
+
+      userAlbumForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const sessionId = document.getElementById('albumTargetSessionId').value;
+        const session = (appData.showSessions || []).find(s => s.id === sessionId);
+        if (!session) return;
+
+        const btn = document.getElementById('submitUserAlbumBtn');
+        btn.disabled = true; btn.textContent = '同步中...';
+
+        const albumId = document.getElementById('albumId').value;
+        const cleanMedia = draftAlbumMedia
+          .map(m => ({ type: m.type || 'photo', url: (m.url || '').trim(), caption: (m.caption || '').trim() }))
+          .filter(m => m.url !== '');
+
+        const payload = {
+          id: albumId || `alb-${Date.now()}`,
+          ownerName: document.getElementById('albumOwnerName').value.trim(),
+          note: document.getElementById('albumNote').value.trim(),
+          media: cleanMedia
+        };
+
+        if (!Array.isArray(session.albums)) session.albums = [];
+        if (albumId) {
+          const idx = session.albums.findIndex(a => a.id === albumId);
+          if (idx !== -1) session.albums[idx] = payload;
+        } else {
+          session.albums.push(payload);
+        }
+
+        const ok = await saveToCloud();
+        btn.disabled = false; btn.textContent = '儲存相簿至雲端';
+        if (ok) userAlbumModal.classList.add('hidden');
+      });
+
+      showSessionsContainer.addEventListener('click', async (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+        const action = target.dataset.action;
+
+        if (action === 'open-new-album') openUserAlbumModal(target.dataset.sessionId, null);
+        else if (action === 'edit-session') {
+          const sess = (appData.showSessions || []).find(s => s.id === target.dataset.sessionId);
+          if (sess) openShowSessionModal(sess);
+        } else if (action === 'delete-session') {
+          const sess = (appData.showSessions || []).find(s => s.id === target.dataset.sessionId);
+          if (sess && confirm(`確定要刪除「${sess.title}」整個場次影音區嗎？`)) {
+            appData.showSessions = (appData.showSessions || []).filter(s => s.id !== sess.id);
+            await saveToCloud();
+          }
+        } else if (action === 'edit-user-album') {
+          const sess = (appData.showSessions || []).find(s => s.id === target.dataset.sessionId);
+          const alb = sess && (sess.albums || []).find(a => a.id === target.dataset.albumId);
+          if (alb) openUserAlbumModal(sess.id, alb);
+        } else if (action === 'delete-user-album') {
+          const sess = (appData.showSessions || []).find(s => s.id === target.dataset.sessionId);
+          const alb = sess && (sess.albums || []).find(a => a.id === target.dataset.albumId);
+          if (alb && confirm(`確定要刪除 (${alb.ownerName}的) 相簿嗎？`)) {
+            sess.albums = sess.albums.filter(a => a.id !== alb.id);
+            await saveToCloud();
+          }
+        } else if (action === 'download-media') {
+          triggerDownload(target.dataset.url, target.dataset.filename);
+        } else if (action === 'open-album-lightbox') {
+          lightboxContext = { mode: 'album', sessionId: target.dataset.sessionId, albumId: target.dataset.albumId, index: Number(target.dataset.mediaIdx || 0) };
+          renderLightbox();
+          photoLightbox.classList.remove('hidden');
+        }
+      });
+
+      // ==================== UNIVERSAL LIGHTBOX ====================
+      const photoLightbox = document.getElementById('photoLightbox');
+      const lightboxMediaStage = document.getElementById('lightboxMediaStage');
+      const lightboxDownloadBtn = document.getElementById('lightboxDownloadBtn');
+      let currentLightboxDownloadInfo = { url: '', filename: 'MOREBEUS_file' };
+
+      function renderLightbox() {
+        let items = [], titleText = '', dateText = '';
+        if (lightboxContext.mode === 'merch') {
+          const group = (appData.merchGroups || []).find(g => g.id === lightboxContext.groupId);
+          if (!group || !group.photos || !group.photos.length) return;
+          items = group.photos.map(p => ({ type: 'photo', url: p.url, caption: p.caption || group.description || '' }));
+          titleText = group.title; dateText = group.date || '';
+        } else {
+          const sess = (appData.showSessions || []).find(s => s.id === lightboxContext.sessionId);
+          const alb = sess && (sess.albums || []).find(a => a.id === lightboxContext.albumId);
+          if (!alb || !alb.media || !alb.media.length) return;
+          items = alb.media;
+          titleText = `${sess.title} — (${alb.ownerName}的) 相簿`; dateText = sess.date || '';
+        }
+
+        const total = items.length;
+        const idx = ((lightboxContext.index % total) + total) % total;
+        lightboxContext.index = idx;
+        const current = items[idx];
+        const isVideo = current.type === 'video';
+        const ytId = isVideo ? getYouTubeId(current.url) : null;
+
+        let stageHtml = '';
+        if (isVideo) {
+          stageHtml = ytId
+            ? `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${ytId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
+            : `<video src="${escapeHtml(current.url)}" controls autoplay class="max-h-full max-w-full"></video>`;
+        } else {
+          stageHtml = `<img src="${escapeHtml(current.url)}" alt="" class="max-h-full max-w-full object-contain" />`;
+        }
+
+        stageHtml += `
+          <button type="button" onclick="document.getElementById('photoLightbox').classList.add('hidden')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/65 text-white flex items-center justify-center hover:bg-black/85 cursor-pointer z-10">✕</button>
+          ${total > 1 ? `
+            <button type="button" id="lbPrev" class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/85 cursor-pointer z-10">‹</button>
+            <button type="button" id="lbNext" class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/85 cursor-pointer z-10">›</button>
+          ` : ''}
+          <span class="absolute bottom-3 right-3 px-2.5 py-0.5 rounded-full bg-black/65 text-white font-display text-xs z-10">${idx + 1} / ${total}</span>
+        `;
+
+        lightboxMediaStage.innerHTML = stageHtml;
+        document.getElementById('lightboxGroupTitle').textContent = titleText;
+        document.getElementById('lightboxDate').textContent = dateText;
+        document.getElementById('lightboxPhotoCaption').textContent = current.caption || '';
+
+        currentLightboxDownloadInfo = { url: current.url, filename: `MOREBEUS_${idx + 1}${isVideo ? '.mp4' : '.jpg'}` };
+
+        const prevBtn = document.getElementById('lbPrev');
+        const nextBtn = document.getElementById('lbNext');
+        if (prevBtn) prevBtn.onclick = () => { lightboxContext.index -= 1; renderLightbox(); };
+        if (nextBtn) nextBtn.onclick = () => { lightboxContext.index += 1; renderLightbox(); };
+      }
+
+      lightboxDownloadBtn.addEventListener('click', () => triggerDownload(currentLightboxDownloadInfo.url, currentLightboxDownloadInfo.filename));
 
       merchGroupsContainer.addEventListener('click', async (e) => {
         const target = e.target.closest('[data-action]');
         if (!target) return;
         const action = target.dataset.action;
 
-        if (action === 'open-lightbox') {
-          lightboxState.groupId = target.dataset.groupId;
-          lightboxState.index = Number(target.dataset.photoIdx || 0);
-          updateLightboxView();
+        if (action === 'open-merch-lightbox') {
+          lightboxContext = { mode: 'merch', groupId: target.dataset.groupId, index: Number(target.dataset.photoIdx || 0) };
+          renderLightbox();
           photoLightbox.classList.remove('hidden');
         } else if (action === 'edit-merch-group') {
           const group = (appData.merchGroups || []).find(g => g.id === target.dataset.id);
@@ -1349,17 +2348,14 @@
         }
       });
 
-      // Search & Time Filters
+      // Search & Filters
       searchInput.addEventListener('input', (e) => {
         searchQuery = e.target.value;
         clearSearchBtn.classList.toggle('hidden', !searchQuery);
         renderEvents();
       });
       clearSearchBtn.addEventListener('click', () => {
-        searchQuery = '';
-        searchInput.value = '';
-        clearSearchBtn.classList.add('hidden');
-        renderEvents();
+        searchQuery = ''; searchInput.value = ''; clearSearchBtn.classList.add('hidden'); renderEvents();
       });
       document.querySelectorAll('.time-filter-btn').forEach(b => {
         b.addEventListener('click', () => {
@@ -1400,7 +2396,7 @@
       document.getElementById('forceSyncBtn').addEventListener('click', fetchFromCloud);
       document.getElementById('retryFetchBtn').addEventListener('click', fetchFromCloud);
 
-      // Start initial fetch
+      // Initial Load
       fetchFromCloud();
     })();
   </script>
